@@ -3,13 +3,24 @@ import { NextResponse, NextRequest } from 'next/server';
 const baseURL = process.env.NEXT_PUBLIC_URL;
 
 export async function middleware(request: NextRequest) {
-  console.info(`url: ${request.nextUrl.pathname}`);
+  const refresh_token = request.cookies.get('refresh_token');
+
+  if (
+    (!request.nextUrl.pathname.startsWith('/auth') && !refresh_token) ||
+    (refresh_token && !refresh_token.value)
+  ) {
+    return NextResponse.redirect(`${baseURL}/auth`);
+  }
 
   if (request.nextUrl.pathname === '/') {
     return NextResponse.redirect(`${baseURL}/auth`);
   }
+
+  if (request.nextUrl.pathname === '/admin_panel') {
+    return NextResponse.redirect(`${baseURL}/admin_panel/claims`);
+  }
 }
 
 export const config = {
-  matcher: ['/']
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 };

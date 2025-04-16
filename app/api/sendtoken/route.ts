@@ -1,20 +1,31 @@
 import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
-
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
+import { apiURL } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   const { token: formToken } = await request.json();
 
-  const apiResponse = await axios.post(`${baseURL}/v1/auth/confirm-login`, {
+  const apiResponse = await axios.post(`${apiURL}/v1/auth/confirm-login`, {
     token: formToken
   });
 
-  const { token, refresh_token, status, statusText } = apiResponse.data;
+  const { token, refresh_token } = apiResponse.data;
 
-  console.info('token + refresh:');
-  console.info(token);
-  console.info(refresh_token);
+  const response = new NextResponse();
 
-  return NextResponse.json({ status, statusText });
+  response.cookies.set('refresh_token', refresh_token, {
+    httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60,
+    secure: true,
+    sameSite: 'strict'
+  });
+
+  response.cookies.set('access_token', token, {
+    httpOnly: true,
+    maxAge: 15 * 60,
+    secure: true,
+    sameSite: 'strict'
+  });
+
+  return response;
 }
