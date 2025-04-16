@@ -6,9 +6,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios";
 import { toast } from "sonner";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import MyForm from "./MyForm";
+import { useState } from "react";
 
 const formSchema = z.object({
   token: z.string({ message: "Код неверный" }),
@@ -17,6 +18,8 @@ const formSchema = z.object({
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export default function CheckCodeForm({ callback }: { callback: Function }) {
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -28,13 +31,13 @@ export default function CheckCodeForm({ callback }: { callback: Function }) {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
     axios.post('/api/sendtoken', values)
-      .then((res) => {
+      .then(() => {
+        router.replace('/admin_panel/claims')
         toast('Успешно!', {
           icon: <CheckCircle2 />
         })
-        console.info(res);
-        router.replace('/admin_panel')
       })
       .catch(() => {
         toast('Ошибка!', {
@@ -42,20 +45,28 @@ export default function CheckCodeForm({ callback }: { callback: Function }) {
           closeButton: true,
         })
       })
+      .finally(() => {
+        setIsLoading(false);
+      })
   }
 
   return (
     <MyForm
       form={form}
       onSubmit={form.handleSubmit(onSubmit)}
+      name={'token'}
       label="Код подтверждения"
       placeholder="123abc..."
       description="Код с вашей почты"
     >
-      <div className="flex flex-col gap-2">
-        <Button variant={'destructive'} onClick={() => { callback(false) }}>Назад</Button>
-        <Button className="bg-green-400 hover:bg-green-500" onClick={() => { form.handleSubmit(onSubmit) }}>Отправить</Button>
-      </div>
+      {
+        isLoading ?
+          <div className="flex w-full justify-center"><Loader2 className='animate-spin' /></div> :
+          <div className="flex flex-col gap-2">
+            <Button variant={'destructive'} onClick={() => { callback(false) }}>Назад</Button>
+            <Button className="bg-green-400 hover:bg-green-500" onClick={() => { form.handleSubmit(onSubmit) }}>Отправить</Button>
+          </div>
+      }
     </MyForm>
   );
 }

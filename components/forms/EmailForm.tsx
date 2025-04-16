@@ -6,8 +6,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios";
 import { toast } from "sonner";
-import { Info } from 'lucide-react';
+import { Info, Loader2 } from 'lucide-react';
 import MyForm from "./MyForm";
+import { useState } from "react";
 
 const formSchema = z.object({
   email: z.string().email({ message: "В введённой почте есть ошибка." }),
@@ -17,6 +18,8 @@ const formSchema = z.object({
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export default function EmailForm({ callback }: { callback: Function }) {
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -25,12 +28,12 @@ export default function EmailForm({ callback }: { callback: Function }) {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
     axios.post('/api/signin', values)
-      .then((res) => {
+      .then(() => {
         toast('Код отправлен на почту!', {
           icon: <Info />
         })
-        console.info(res);
         callback(true);
       })
       .catch((res) => {
@@ -39,17 +42,25 @@ export default function EmailForm({ callback }: { callback: Function }) {
           closeButton: true,
         })
       })
+      .finally(() => {
+        setIsLoading(false);
+      })
   }
 
   return (
     <MyForm
       form={form}
       onSubmit={form.handleSubmit(onSubmit)}
+      name={'email'}
       label="Электронная почта"
       placeholder="ivanov@mail.ru"
       description="Ваша почта для входа"
     >
-      <Button variant={'default'} onClick={() => { form.handleSubmit(onSubmit) }}>Отправить</Button>
+      {
+        isLoading ?
+          <div className="flex w-full justify-center"><Loader2 className='animate-spin' /></div> :
+          <Button variant={'default'} onClick={() => { form.handleSubmit(onSubmit); }}>Отправить</Button>
+      }
     </MyForm>
   );
 }

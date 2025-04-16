@@ -9,6 +9,7 @@ import { UseFormReturn } from "react-hook-form";
 export default function MyForm(
   { form,
     onSubmit,
+    name,
     label,
     placeholder,
     description,
@@ -16,6 +17,7 @@ export default function MyForm(
   }: {
     form: UseFormReturn<any>,
     onSubmit: any,
+    name: string,
     label: string,
     placeholder: string,
     description: string,
@@ -26,12 +28,12 @@ export default function MyForm(
       <form onSubmit={onSubmit} className=" p-6 bg-white border-2 border-black rounded-2xl">
         <FormField
           control={form.control}
-          name="email"
+          name={name}
           render={({ field }) => (
             <FormItem className="flex flex-col gap-8">
               <FormLabel className="text-4xl text-black">{label}</FormLabel>
               <div className="flex flex-col gap-2">
-                <FormControl>
+                <FormControl id={label}>
                   <Input className="h-12 placeholder:text-lg text-black text-lg border-white placeholder:text-[#9d9d9d]" placeholder={placeholder} {...field} />
                 </FormControl>
                 <FormDescription className="text-black text-lg">{description}</FormDescription>
