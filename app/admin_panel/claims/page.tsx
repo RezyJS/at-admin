@@ -26,7 +26,22 @@ const columns: ColumnDef<Claim>[] = [
     header: "Статус"
   }, {
     accessorKey: 'title',
-    header: "Название"
+    header: "Название",
+    cell: (cell) => {
+      const name = cell.cell.getValue() as string;
+      let _name = name;
+      if (name.length > 30) {
+        _name = name.slice(0, 30) + '...'
+      }
+      return (
+        <div
+          className="h-8 text-md flex items-center text-blue-500 hover:underline hover:cursor-pointer"
+          onClick={() => alert(name)}
+        >
+          {_name}
+        </div>
+      )
+    }
   }, {
     accessorKey: 'description',
     header: "Описание"
@@ -48,8 +63,11 @@ export default function ClaimsPage() {
 
   return (
     <AdminLayout>
-      <div className="flex flex-col gap-5 w-full h-full justify-center items-center">
+      <div className="flex gap-5 w-full h-full justify-between items-center">
         <ClaimsTable columns={columns} data={claims} />
+        <div className="flex w-[50%] text-center text-balance font-medium text-2xl h-full justify-center items-center flex-1 border-1 border-gray-200 rounded-md">
+          Нажмите на название заявки<br />для отображения информации
+        </div>
       </div>
     </AdminLayout>
   );

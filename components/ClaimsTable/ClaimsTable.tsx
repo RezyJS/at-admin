@@ -35,7 +35,7 @@ export default function ClaimsTable<TData, TValue>({
   })
 
   return (
-    <div className="flex flex-col w-full h-full">
+    <div className="flex flex-col w-[50%] h-full">
       <div className="flex rounded-md border w-full h-max">
         <Table>
           <TableHeader>
@@ -80,14 +80,14 @@ export default function ClaimsTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center flex-1 justify-end space-x-2">
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          Previous
+          Назад
         </Button>
         <Button
           variant="outline"
@@ -95,7 +95,7 @@ export default function ClaimsTable<TData, TValue>({
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Next
+          Вперёд
         </Button>
       </div>
     </div>
