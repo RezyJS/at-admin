@@ -16,7 +16,8 @@ export default function AdminLayout({ children }: { children?: ReactNode }) {
   }
 
   const handleSignOut = () => {
-    axios.post('/api/signout')
+    axios.post('/api/signout');
+    router.replace(`${baseURL}/auth`)
   }
 
   return (
