@@ -25,13 +25,13 @@ const columns: ColumnDef<Claim>[] = [
     accessorKey: 'status',
     header: "Статус"
   }, {
-    accessorKey: 'name',
+    accessorKey: 'title',
     header: "Название"
   }, {
     accessorKey: 'description',
     header: "Описание"
   }, {
-    accessorKey: 'date',
+    accessorKey: 'datetime',
     header: "Дата"
   },
 ]
