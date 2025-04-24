@@ -26,7 +26,5 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  console.info(apiRequest.body.claims);
-
   return afterFetcher(apiRequest, 'claims');
 }
