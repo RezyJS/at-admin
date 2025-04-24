@@ -12,7 +12,7 @@ import { useMemo, useState } from "react";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DateRange } from "react-day-picker";
 import { addDays, format } from "date-fns";
@@ -244,12 +244,24 @@ export default function ClaimsPage() {
 
   // Обработка ошибок
   if (error) {
-    return <p>Ошибка загрузки данных: {error.message}</p>;
+    return (
+      <AdminLayout>
+        <div className="flex flex-col text-3xl h-full w-full items-center justify-center">
+          <p>Ошибка загрузки данных: {error.message}</p>
+        </div>
+      </AdminLayout>
+    )
   }
 
   // Отображение загрузки
   if (isLoadingInitialData) {
-    return <p>Загрузка...</p>;
+    return (
+      <AdminLayout>
+        <div className="flex flex-col h-full w-full items-center justify-center">
+          <Loader2 className="h-16 w-16 animate-spin" />
+        </div>
+      </AdminLayout>
+    )
   }
 
   return (
@@ -436,6 +448,8 @@ export default function ClaimsPage() {
           <ResizablePanel className="h-full" defaultSize={25} minSize={25}>
             <div className="flex w-full h-full text-center text-balance font-medium text-2xl justify-center items-center flex-1 border border-gray-200 rounded-md">
               Нажмите на название заявки<br />для отображения информации
+              <br />
+              WIP
             </div>
           </ResizablePanel>
         </div>
