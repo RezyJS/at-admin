@@ -3,18 +3,13 @@ import { afterFetcher, apiURL } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const afterId = searchParams.get('afterId');
+  const id = request.url.slice(request.url.lastIndexOf('/'));
 
   const refresh = request.cookies.get('refresh_token')?.value;
   const access = request.cookies.get('access_token')?.value;
 
-  const url = afterId
-    ? `${apiURL}/admin/v1/claims/chunk?afterId=${afterId}`
-    : `${apiURL}/admin/v1/claims/chunk`;
-
   const apiRequest = await fetcher({
-    url,
+    url: `${apiURL}/v1/announcements/${id}`,
     refresh,
     access
   });
@@ -23,8 +18,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.error();
   }
 
-  console.info('claims api');
-  console.info(apiRequest.body);
-
-  return afterFetcher(apiRequest, 'claims');
+  return afterFetcher(apiRequest);
 }

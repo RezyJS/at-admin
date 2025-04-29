@@ -1,0 +1,14 @@
+/* app/news/NewsPage.module.css */
+.newsContainer {
+  min-width: max-content;
+  width: 75vw;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.loadMoreButton {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  cursor: pointer;
+}

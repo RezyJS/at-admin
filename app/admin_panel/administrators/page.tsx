@@ -31,9 +31,11 @@ export default function AdministratorsPage() {
   }, [data])
 
   if (error) {
-    return <div className="flex h-full w-full justify-center items-center">
-      Unlucky :(
-    </div>
+    return <AdminLayout>
+      <div className="flex h-full w-full justify-center items-center">
+        Unlucky :(
+      </div>
+    </AdminLayout>
   }
 
   return (
