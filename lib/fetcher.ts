@@ -15,6 +15,7 @@ export interface FetcherResult {
   body: {
     claims?: object;
     announcements?: object;
+    admins?: object;
   };
   refresh?: string;
   access?: string;
@@ -48,8 +49,12 @@ const fetcher = async (args: FetcherArguments): Promise<FetcherResult> => {
     });
 
     if (request.ok) {
-      const answer = request.body ? await request.json() : {};
-      return { error: false, status: request.status, body: answer };
+      try {
+        const answer = request.body ? await request.json() : {};
+        return { error: false, status: request.status, body: answer };
+      } catch {
+        return { error: false, status: request.status, body: {} };
+      }
     }
 
     return { error: true, status: request.status, body: {} };

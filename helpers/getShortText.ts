@@ -1,4 +1,6 @@
 export default function getShortText(str: string, length: number = 50): string {
+  if (!str) return '';
+
   if (str.length <= 50) {
     return str;
   }

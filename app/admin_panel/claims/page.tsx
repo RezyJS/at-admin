@@ -86,7 +86,7 @@ const columns: ColumnDef<Claim>[] = [
     header: "Дата",
     cell: ({ row }) => {
       const datetime = row.getValue("datetime") as string;
-      const [datePart, timePart] = datetime.split(" ");
+      const [datePart, timePart] = datetime !== undefined ? datetime.split(" ") : '01.01.1990 12:00';
       const [day, month, year] = datePart.split(".").map(Number);
       const [hours, minutes] = timePart.split(":").map(Number);
 

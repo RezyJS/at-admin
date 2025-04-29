@@ -7,12 +7,20 @@ export const apiURL = process.env.NEXT_PUBLIC_API_URL;
 
 export const afterFetcher = (
   apiRequest: FetcherResult,
-  body: 'claims' | 'news'
+  body?: 'claims' | 'news' | 'admins'
 ) => {
-  const response =
-    body === 'claims'
-      ? NextResponse.json(apiRequest.body.claims)
-      : NextResponse.json(apiRequest.body.announcements);
+  const response = (function () {
+    switch (body) {
+      case 'claims':
+        return NextResponse.json(apiRequest.body.claims);
+      case 'news':
+        return NextResponse.json(apiRequest.body.announcements);
+      case 'admins':
+        return NextResponse.json(apiRequest.body.admins);
+      default:
+        return NextResponse.json(apiRequest.body);
+    }
+  })();
 
   if (apiRequest.refresh && apiRequest.access) {
     const { refresh, access } = apiRequest;
