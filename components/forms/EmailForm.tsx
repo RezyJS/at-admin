@@ -16,7 +16,7 @@ const formSchema = z.object({
 
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export default function EmailForm({ callback }: { callback: Function }) {
+export default function EmailForm({ callback, setEmail }: { callback: Function, setEmail: Function }) {
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,6 +31,7 @@ export default function EmailForm({ callback }: { callback: Function }) {
     setIsLoading(true);
     axios.post('/api/signin', values)
       .then(() => {
+        setEmail(values.email)
         toast('Код отправлен на почту!', {
           icon: <Info />
         })

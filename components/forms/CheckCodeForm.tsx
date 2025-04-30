@@ -1,72 +1,73 @@
 'use client'
 
-import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios";
 import { toast } from "sonner";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import MyForm from "./MyForm";
 import { useState } from "react";
-
-const formSchema = z.object({
-  token: z.string({ message: "Код неверный" }),
-});
-
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "../ui/input-otp";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { Button } from "../ui/button";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export default function CheckCodeForm({ callback }: { callback: Function }) {
+export default function CheckCodeForm({ callback, email }: { callback: Function, email: string | null }) {
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
+  const [code, setCode] = useState<string>();
 
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      token: "",
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function handleSubmit() {
     setIsLoading(true);
-    axios.post('/api/sendtoken', values)
-      .then(() => {
-        router.replace('/admin_panel/claims')
-        toast('Успешно!', {
-          icon: <CheckCircle2 />
+    if (email && code) {
+      axios.post('/api/sendtoken', { email, code })
+        .then(() => {
+          router.replace('/admin_panel/claims')
+          toast('Успешно!', {
+            icon: <CheckCircle2 />
+          })
         })
-      })
-      .catch(() => {
-        toast('Ошибка!', {
-          description: 'Неправильный код',
-          closeButton: true,
+        .catch(() => {
+          toast('Ошибка!', {
+            description: 'Неправильный код',
+            closeButton: true,
+          })
         })
-      })
-      .finally(() => {
-        setIsLoading(false);
-      })
+        .finally(() => {
+          setIsLoading(false);
+        })
+    }
   }
 
   return (
-    <MyForm
-      form={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      name={'token'}
-      label="Код подтверждения"
-      placeholder="123abc..."
-      description="Код с вашей почты"
-    >
-      {
-        isLoading ?
-          <div className="flex w-full justify-center"><Loader2 className='animate-spin' /></div> :
-          <div className="flex flex-col gap-2">
-            <Button variant={'destructive'} onClick={() => { callback(false) }}>Назад</Button>
-            <Button className="bg-green-400 hover:bg-green-500" onClick={() => { form.handleSubmit(onSubmit) }}>Отправить</Button>
-          </div>
-      }
-    </MyForm>
+    <div className=" p-6 bg-white border-2 border-black rounded-2xl flex flex-col gap-8">
+      <div className="flex flex-col gap-2">
+        <p>Код с почты</p>
+        <InputOTP
+          pattern={REGEXP_ONLY_DIGITS}
+          maxLength={6}
+          value={code}
+          onChange={(value) => setCode(value)}
+        >
+          <InputOTPGroup className="flex gap-2">
+            <div className="flex">
+              <InputOTPSlot index={0} />
+              <InputOTPSlot index={1} />
+              <InputOTPSlot index={2} />
+            </div>
+            <InputOTPSeparator />
+            <div className="flex">
+              <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
+            </div>
+          </InputOTPGroup>
+        </InputOTP>
+      </div>
+      <div className="flex flex-col gap-2">
+        <Button onClick={handleSubmit} className="text-lg font-semibold bg-green-400 hover:bg-green-600">Отправить</Button>
+        <Button onClick={() => callback(false)} variant={'destructive'} className="text-lg font-semibold hover:bg-red-800">Вернуться</Button>
+      </div>
+    </div>
   );
 }

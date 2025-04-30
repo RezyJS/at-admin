@@ -24,12 +24,12 @@ export interface FetcherResult {
 const fetcher = async (args: FetcherArguments): Promise<FetcherResult> => {
   const refresh = async (refresh: string) => {
     return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v1/auth/refresh`, {
-      body: JSON.stringify({ token: refresh }),
+      body: JSON.stringify({ refresh_token: refresh }),
       method: 'POST'
     })
       .then((res) => res.json())
       .then((res) => {
-        const { token: newAccess, refresh_token: newRefresh } = res;
+        const { access_token: newAccess, refresh_token: newRefresh } = res;
         return { error: false, status: 200, body: { newAccess, newRefresh } };
       })
       .catch((err) => {

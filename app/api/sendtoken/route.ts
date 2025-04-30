@@ -3,13 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { apiURL } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
-  const { token: formToken } = await request.json();
+  const { email, code } = await request.json();
 
   const apiResponse = await axios.post(`${apiURL}/v1/auth/confirm-login`, {
-    token: formToken
+    email,
+    code: +code
   });
 
-  const { token, refresh_token } = apiResponse.data;
+  const { access_token, refresh_token } = apiResponse.data;
 
   const response = new NextResponse();
 
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest) {
     sameSite: 'strict'
   });
 
-  response.cookies.set('access_token', token, {
+  response.cookies.set('access_token', access_token, {
     httpOnly: true,
     maxAge: 15 * 60,
     secure: true,

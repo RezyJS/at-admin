@@ -6,6 +6,7 @@ import { useState } from "react";
 
 export default function AuthPage() {
   const [isCode, setIsCode] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
 
   return (
     <div className="bg-white w-full h-full flex flex-col justify-center items-center">
@@ -13,8 +14,8 @@ export default function AuthPage() {
       <p className="pb-8 text-black font-bold text-3xl">Администрирование</p>
       {
         isCode ?
-          <CheckCodeForm callback={setIsCode} /> :
-          <EmailForm callback={setIsCode} />
+          <CheckCodeForm email={email} callback={setIsCode} /> :
+          <EmailForm setEmail={setEmail} callback={setIsCode} />
       }
     </div>
   );
