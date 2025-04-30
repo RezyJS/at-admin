@@ -9,9 +9,10 @@ export async function GET(request: NextRequest) {
   const refresh = request.cookies.get('refresh_token')?.value;
   const access = request.cookies.get('access_token')?.value;
 
-  const url = afterId
-    ? `${apiURL}/v1/announcements/chunk?cursor=${afterId}`
-    : `${apiURL}/v1/announcements/chunk`;
+  const url =
+    afterId === undefined
+      ? `${apiURL}/v1/announcements/chunk?cursor=${afterId}`
+      : `${apiURL}/v1/announcements/chunk`;
 
   const apiRequest = await fetcher({
     url,

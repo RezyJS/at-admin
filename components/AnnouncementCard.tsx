@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 import Markdown from 'react-markdown';
 
 interface Announcement {
-  uid: string;
+  id: string;
   title: string;
   description: string;
   datetime: string;
@@ -17,7 +17,7 @@ const AnnouncementCard: React.FC<AnnouncementCardProps> = ({ announcement }) => 
   const router = useRouter();
 
   const handleCardClick = () => {
-    router.push(`/admin_panel/announcements/${announcement.uid}`);
+    router.push(`/admin_panel/announcements/${announcement.id}`);
   };
 
 
