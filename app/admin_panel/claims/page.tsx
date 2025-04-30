@@ -23,17 +23,17 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 type Claim = {
-  id: number;
-  user: number;
-  title: string;
-  description: string;
-  category: string;
-  status: string;
-  photos: string[] | null;
-  latitude: number;
-  longitude: number;
-  feedback: string;
-  datetime: string;
+  ID: number;
+  UID: number;
+  Title: string;
+  Description: string;
+  Category: string;
+  Status: string;
+  Photos: string[] | null;
+  Latitude: number;
+  Longitude: number;
+  Feedback: string;
+  Datetime: string;
 };
 
 const statusOptions = [
@@ -46,61 +46,53 @@ const statusOptions = [
 
 const columns: ColumnDef<Claim>[] = [
   {
-    accessorKey: "id",
+    accessorKey: "ID",
     header: "ID",
-    cell: ({ row }) => <div className="w-[5%]">{row.getValue("id")}</div>,
+    cell: ({ row }) => <div className="w-[5%]">{row.getValue("ID")}</div>,
   },
   {
-    accessorKey: "status",
+    accessorKey: "Status",
     header: "Статус",
     cell: ({ row }) => (
-      <Status status={row.getValue("status")} />
+      <Status status={row.getValue("Status")} />
     ),
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
   },
   {
-    accessorKey: "title",
+    accessorKey: "Title",
     header: "Название",
     cell: ({ row }) => {
-      const title = row.getValue("title") as string;
+      const title = row.getValue("Title") as string;
       return (
-        <a href={`/admin_panel/claims/${row.original.id}?id=${row.original.id}`} className="text-blue-500 hover:underline">
+        <a href={`/admin_panel/claims/${row.original.ID}?id=${row.original.ID}`} className="text-blue-500 hover:underline">
           {getShortText(title)}
         </a>
       );
     },
   },
   {
-    accessorKey: "description",
+    accessorKey: "Description",
     header: "Описание",
     cell: ({ row }) => {
-      const description = row.getValue("description") as string;
+      const description = row.getValue("Description") as string;
       return <div>{getShortText(description)}</div>;
     },
   },
   {
-    accessorKey: "datetime",
+    accessorKey: "Datetime",
     header: "Дата",
     cell: ({ row }) => {
-      const datetime = row.getValue("datetime") as string;
-      const [datePart, timePart] = datetime !== undefined ? datetime.split(" ") : '01.01.1990 12:00';
-      const [day, month, year] = datePart.split(".").map(Number);
-      const [hours, minutes] = timePart.split(":").map(Number);
-
-      // Европейский формат: дд.мм.гггг чч:мм
-      const formattedDate = `${day.toString().padStart(2, '0')}.${month.toString().padStart(2, '0')}.${year} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-
-      return <div>{formattedDate}</div>;
+      const datetime = row.getValue("Datetime") as string;
+      const date = new Date(datetime);
+      return <div>{format(date, 'dd.MM.yyyy HH:mm')}</div>;
     },
     filterFn: (row, id, value) => {
       if (!value) return true;
 
       const datetime = row.getValue(id) as string;
-      const [datePart] = datetime.split(" ");
-      const [day, month, year] = datePart.split(".").map(Number);
-      const date = new Date(year, month - 1, day);
+      const date = new Date(datetime);
 
       if (value.from && value.to) {
         return date >= value.from && date <= value.to;
@@ -113,7 +105,7 @@ const columns: ColumnDef<Claim>[] = [
       }
       return true;
     },
-  },
+  }
 ];
 
 const PAGE_SIZE = 10;
@@ -188,15 +180,15 @@ export default function ClaimsPage() {
   // Обработчик фильтрации по дате
   const handleDateFilter = (range: DateRange | undefined) => {
     setDateRange(range);
-    table.getColumn("datetime")?.setFilterValue(range);
+    table.getColumn("Datetime")?.setFilterValue(range);
   };
 
   // Обработчик фильтрации по статусу
   const handleStatusFilter = (status: string) => {
     if (status === "all") {
-      table.getColumn("status")?.setFilterValue(undefined);
+      table.getColumn("Status")?.setFilterValue(undefined);
     } else {
-      table.getColumn("status")?.setFilterValue(status);
+      table.getColumn("Status")?.setFilterValue(status);
     }
   };
 

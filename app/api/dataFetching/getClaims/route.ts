@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   const access = request.cookies.get('access_token')?.value;
 
   const url = afterId
-    ? `${apiURL}/admin/v1/claims/chunk?afterId=${afterId}`
+    ? `${apiURL}/admin/v1/claims/chunk?cursor=${afterId}`
     : `${apiURL}/admin/v1/claims/chunk`;
 
   const apiRequest = await fetcher({
