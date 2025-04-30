@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import useSWR from 'swr'
 
@@ -25,10 +25,6 @@ export default function AdministratorsPage() {
 
   const { data, isLoading, error } = useSWR('/api/admins', fetcher);
   const [email, setEmail] = useState('');
-
-  useEffect(() => {
-    console.info(data);
-  }, [data])
 
   if (error) {
     return <AdminLayout>

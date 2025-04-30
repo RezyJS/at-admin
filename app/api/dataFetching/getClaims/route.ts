@@ -23,8 +23,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.error();
   }
 
-  console.info('claims api');
-  console.info(apiRequest.body);
-
   return afterFetcher(apiRequest, 'claims');
 }

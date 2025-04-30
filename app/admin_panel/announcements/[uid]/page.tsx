@@ -35,14 +35,16 @@ const NewsSkeleton = () => (
 );
 
 const Wrapper = ({ router, children }: { router: AppRouterInstance, children: React.ReactNode }) => (
-  <div className="w-full flex flex-col py-6">
-    <div className='px-4 flex justify-end'>
-      <Button onClick={() => router.back()} className='w-12 h-12 bg-red-500 hover:bg-red-700'>
-        <X />
-      </Button>
+  <AdminLayout>
+    <div className="w-full flex flex-col py-6">
+      <div className='px-4 flex justify-end'>
+        <Button onClick={() => router.back()} className='w-12 h-12 bg-red-500 hover:bg-red-700'>
+          <X />
+        </Button>
+      </div>
+      {children}
     </div>
-    {children}
-  </div>
+  </AdminLayout>
 );
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
@@ -80,6 +82,7 @@ const News = ({ params }: { params: Promise<{ uid: string }> }) => {
 
   if (isLoading && !error) {
     return (
+
       <Wrapper router={router}>
         <NewsSkeleton />
       </Wrapper>
@@ -88,35 +91,35 @@ const News = ({ params }: { params: Promise<{ uid: string }> }) => {
 
   if (isLoading || error) {
     return (
-      <AdminLayout>
-        <Wrapper router={router}>
-          <div className='flex flex-col justify-center items-center h-[50vh] gap-[10px]'>
-            <Frown className='text-blue-600 h-12 w-12' />
-            <div className='text-center'>
-              <p className='font-semibold text-lg'>Произошла ошибка загрузки.</p>
-              <p className='font-semibold text-lg'>Попробуйте обновить страницу.</p>
-            </div>
+
+      <Wrapper router={router}>
+        <div className='flex flex-col justify-center items-center h-[50vh] gap-[10px]'>
+          <Frown className='text-blue-600 h-12 w-12' />
+          <div className='text-center'>
+            <p className='font-semibold text-lg'>Произошла ошибка загрузки.</p>
+            <p className='font-semibold text-lg'>Попробуйте обновить страницу.</p>
           </div>
-        </Wrapper>
-      </AdminLayout>
+        </div>
+      </Wrapper>
+
     )
   }
 
   return (
-    <AdminLayout>
-      <Wrapper router={router}>
-        <NewsData data={data} />
-        {showScrollButton && (
-          <Button
-            variant='default'
-            className="fixed bottom-4 right-4 p-4 rounded-xl shadow-lg w-12 h-12" // Increased padding and size
-            onClick={scrollToTop}
-          >
-            <ArrowUp size={28} /> {/* Increased icon size */}
-          </Button>
-        )}
-      </Wrapper>
-    </AdminLayout>
+
+    <Wrapper router={router}>
+      <NewsData data={data} />
+      {showScrollButton && (
+        <Button
+          variant='default'
+          className="fixed bottom-4 right-4 p-4 rounded-xl shadow-lg w-12 h-12" // Increased padding and size
+          onClick={scrollToTop}
+        >
+          <ArrowUp size={28} /> {/* Increased icon size */}
+        </Button>
+      )}
+    </Wrapper>
+
   )
 
 };
