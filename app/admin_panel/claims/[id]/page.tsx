@@ -14,9 +14,9 @@ import { format } from 'date-fns';
 
 const ClaimData = ({ data }: { data: any }) => (
   <div className='px-[20px] min-w-[320px] text-left text-pretty w-[75vw] mx-auto'>
-    <h1 className="text-pretty text-2xl font-bold w-[75vw]" style={{ wordWrap: 'break-word' }}>{data.Title}</h1>
-    <p className='text-pretty text-neutral-500 relative after:content-[""] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-neutral-200 pb-2'>Опубликовано: {format(new Date(data.Datetime), 'dd.MM.yyyy')}</p>
-    <p className='text-pretty pt-2 text-lg text-left font-medium'>{data.Description}</p>
+    <h1 className="text-pretty text-2xl font-bold w-[75vw]" style={{ wordWrap: 'break-word' }}>{data.title}</h1>
+    <p className='text-pretty text-neutral-500 relative after:content-[""] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-neutral-200 pb-2'>Опубликовано: {format(new Date(data.datetime), 'dd.MM.yyyy')}</p>
+    <p className='text-pretty pt-2 text-lg text-left font-medium'>{data.description}</p>
   </div>
 );
 

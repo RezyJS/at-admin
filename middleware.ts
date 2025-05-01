@@ -6,6 +6,14 @@ export async function middleware(request: NextRequest) {
   const refresh_token = request.cookies.get('refresh_token');
 
   if (
+    refresh_token &&
+    refresh_token.value &&
+    !request.nextUrl.pathname.startsWith('/admin_panel')
+  ) {
+    return NextResponse.redirect(`${baseURL}/admin_panel/claims`);
+  }
+
+  if (
     (!request.nextUrl.pathname.startsWith('/auth') && !refresh_token) ||
     (refresh_token && !refresh_token.value)
   ) {

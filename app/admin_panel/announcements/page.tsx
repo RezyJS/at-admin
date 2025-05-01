@@ -15,6 +15,7 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import getShortText from '@/helpers/getShortText';
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
@@ -35,18 +36,21 @@ const columns: ColumnDef<Announcement>[] = [
   {
     accessorKey: 'title',
     header: 'Заголовок',
-    cell: ({ row }) => (
-      <a href={`/admin_panel/announcements/${row.original.id}`} className="text-blue-500 hover:underline">
-        {row.getValue('title')}
-      </a>
-    ),
+    cell: ({ row }) => {
+      const title = row.getValue("title") as string;
+      return (
+        <a href={`/admin_panel/announcements/${row.original.id}`} className="text-blue-500 hover:underline" >
+          {getShortText(title)}
+        </a>
+      );
+    },
   },
   {
     accessorKey: 'description',
     header: 'Описание',
     cell: ({ row }) => {
       const description = row.getValue('description') as string;
-      return <div>{description}</div>;
+      return <div>{getShortText(description)}</div>;
     },
   },
   {

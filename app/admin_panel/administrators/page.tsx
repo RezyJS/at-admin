@@ -63,11 +63,10 @@ export default function AdministratorsPage() {
             <Loader2 className="animate-spin h-12 w-12" />
           </div>
           : <div className="w-full grid gap-2 sm:grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-            {[...data].map(({ UID, Email, IsSuperAdmin }: any, id: number) => (
+            {[...data].map(({ email, is_super_admin }: any, id: number) => (
               <div key={id} className="h-max rounded-lg border-black border-2 p-5 flex flex-col gap-3">
-                <p><span className="font-semibold">UID:</span> {UID}</p>
-                <AdminItem title="Почта" value={Email} />
-                <p><span className="font-semibold">Супер Админ:</span> {IsSuperAdmin ? "Да" : "Нет"}</p>
+                <AdminItem title="Почта" value={email} />
+                <p><span className="font-semibold">Супер Админ:</span> {is_super_admin ? "Да" : "Нет"}</p>
                 <div className="flex justify-center">
                   <Button
                     variant={'destructive'}

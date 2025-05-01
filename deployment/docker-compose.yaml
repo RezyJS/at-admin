@@ -1,0 +1,22 @@
+services:
+  at-admin:
+    container_name: at-admin-app
+    build:
+      context: ../
+      dockerfile: deployment/Dockerfile
+    env_file:
+      - ../.env
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - at-network
+
+networks:
+  at-network:
+    driver: bridge

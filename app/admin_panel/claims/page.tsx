@@ -23,68 +23,68 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 type Claim = {
-  ID: number;
-  UID: number;
-  Title: string;
-  Description: string;
-  Category: string;
-  Status: string;
-  Photos: string[] | null;
-  Latitude: number;
-  Longitude: number;
-  Feedback: string;
-  Datetime: string;
+  id: number;
+  uid: number;
+  title: string;
+  description: string;
+  category: string;
+  status: string;
+  photos: string[] | null;
+  latitude: number;
+  longitude: number;
+  feedback: string;
+  datetime: string;
 };
 
 const statusOptions = [
   { value: "pending", label: "В ожидании" },
   { value: "test", label: "в обработке" },
-  { value: "in_progress", label: "В работе" },
+  { value: "accepted", label: "В работе" },
   { value: "completed", label: "Завершено" },
-  { value: "rejected", label: "Отклонено" },
+  { value: "declined", label: "Отклонено" },
 ];
 
 const columns: ColumnDef<Claim>[] = [
   {
-    accessorKey: "ID",
+    accessorKey: "id",
     header: "ID",
-    cell: ({ row }) => <div className="w-[5%]">{row.getValue("ID")}</div>,
+    cell: ({ row }) => <div className="w-[5%]">{row.getValue("id")}</div>,
   },
   {
-    accessorKey: "Status",
+    accessorKey: "status",
     header: "Статус",
     cell: ({ row }) => (
-      <Status status={row.getValue("Status")} />
+      <Status status={row.getValue("status")} />
     ),
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
   },
   {
-    accessorKey: "Title",
+    accessorKey: "title",
     header: "Название",
     cell: ({ row }) => {
-      const title = row.getValue("Title") as string;
+      const title = row.getValue("title") as string;
       return (
-        <a href={`/admin_panel/claims/${row.original.ID}?id=${row.original.ID}`} className="text-blue-500 hover:underline">
-          {getShortText(title)}
+        <a href={`/admin_panel/claims/${row.original.id}?id=${row.original.id}`} className="text-blue-500 hover:underline max-w-prose break-words hyphens-auto leading-relaxed">
+          {title}
         </a>
       );
     },
   },
   {
-    accessorKey: "Description",
+    accessorKey: "description",
     header: "Описание",
     cell: ({ row }) => {
-      const description = row.getValue("Description") as string;
+      const description = row.getValue("description") as string;
       return <div>{getShortText(description)}</div>;
     },
   },
   {
-    accessorKey: "Datetime",
+    accessorKey: "datetime",
     header: "Дата",
     cell: ({ row }) => {
-      const datetime = row.getValue("Datetime") as string;
+      const datetime = row.getValue("datetime") as string;
       const date = new Date(datetime);
       return <div>{format(date, 'dd.MM.yyyy HH:mm')}</div>;
     },
@@ -180,15 +180,15 @@ export default function ClaimsPage() {
   // Обработчик фильтрации по дате
   const handleDateFilter = (range: DateRange | undefined) => {
     setDateRange(range);
-    table.getColumn("Datetime")?.setFilterValue(range);
+    table.getColumn("datetime")?.setFilterValue(range);
   };
 
   // Обработчик фильтрации по статусу
   const handleStatusFilter = (status: string) => {
     if (status === "all") {
-      table.getColumn("Status")?.setFilterValue(undefined);
+      table.getColumn("status")?.setFilterValue(undefined);
     } else {
-      table.getColumn("Status")?.setFilterValue(status);
+      table.getColumn("status")?.setFilterValue(status);
     }
   };
 
