@@ -19,4 +19,5 @@ services:
 
 networks:
   at-network:
-    driver: bridge
+    external:
+      name: active-tver_at-network
