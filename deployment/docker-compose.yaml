@@ -1,6 +1,6 @@
 services:
   at-admin:
-    container_name: at-admin-app
+    container_name: at-admin
     build:
       context: ../
       dockerfile: deployment/Dockerfile

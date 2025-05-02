@@ -34,7 +34,7 @@ export const afterFetcher = (
 
     response!.cookies.set('refresh_token', refresh, {
       httpOnly: true,
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 90 * 24 * 60 * 60, // 30 days
       secure: true, // Enable in production
       sameSite: 'strict'
     });

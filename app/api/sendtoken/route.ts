@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
   response.cookies.set('refresh_token', refresh_token, {
     httpOnly: true,
-    maxAge: 30 * 24 * 60 * 60,
+    maxAge: 90 * 24 * 60 * 60,
     secure: true,
     sameSite: 'strict'
   });
