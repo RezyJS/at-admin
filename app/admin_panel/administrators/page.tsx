@@ -95,12 +95,6 @@ export default function AdministratorsPage() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      pagination: {
-        pageIndex: 0,
-        pageSize: 10
-      }
-    }
   });
 
   if (error) {

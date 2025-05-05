@@ -1,25 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import AdminLayout from "@/components/layouts/AdminLayout/AdminLayout";
-import { ColumnDef, ColumnFiltersState, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table";
-import useSWRInfinite from "swr/infinite";
-import axios from "axios";
+import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import Status, { ClaimStatus } from "@/components/Status/Status";
 import getShortText from "@/helpers/getShortText";
-import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DateRange } from "react-day-picker";
-import { addDays, format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ChevronsLeft, ChevronsRight, Loader2 } from "lucide-react";
+import { format } from "date-fns";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
 import { MyClaimsTable } from "@/components/Table/Table";
-
-const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+import axios from "axios";
+import { Button } from "@/components/ui/button";
 
 type Claim = {
   id: number;
@@ -35,26 +26,12 @@ type Claim = {
   datetime: string;
 };
 
-const statusOptions = [
-  { value: "pending", label: "В ожидании" },
-  { value: "accepted", label: "В работе" },
-  { value: "completed", label: "Завершено" },
-  { value: "declined", label: "Отклонено" },
-];
-
 const statusParser = {
   'pending': ClaimStatus.PENDING,
   "accepted": ClaimStatus.ACCEPTED,
   "completed": ClaimStatus.COMPLETED,
   "declined": ClaimStatus.DECLINED,
 }
-
-const statuses = [
-  "pending",
-  "accepted",
-  "completed",
-  "declined",
-]
 
 const columns: ColumnDef<Claim>[] = [
   {
@@ -67,15 +44,8 @@ const columns: ColumnDef<Claim>[] = [
     header: "Статус",
     cell: ({ row }) => {
       const status: 'pending' | 'accepted' | 'completed' | 'declined' = row.getValue('status');
-      if (!statuses.includes(status)) {
-        return <Status status={ClaimStatus.PENDING} />
-      }
-
-      return <Status status={statusParser[status]} />
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
+      return <Status status={statusParser[status || ClaimStatus.PENDING]} />
+    }
   },
   {
     accessorKey: "title",
@@ -104,107 +74,50 @@ const columns: ColumnDef<Claim>[] = [
       const datetime = row.getValue("datetime") as string;
       const date = new Date(datetime);
       return <div>{format(date, 'dd.MM.yyyy HH:mm')}</div>;
-    },
-    filterFn: (row, id, value) => {
-      if (!value) return true;
-
-      const datetime = row.getValue(id) as string;
-      const date = new Date(datetime);
-
-      if (value.from && value.to) {
-        return date >= value.from && date <= value.to;
-      }
-      if (value.from) {
-        return date >= value.from;
-      }
-      if (value.to) {
-        return date <= value.to;
-      }
-      return true;
-    },
+    }
   }
 ];
 
-const PAGE_SIZE = 20;
+const page_size = 15;
 
 export default function ClaimsPage() {
-  const [currentPage,] = useState(1);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: undefined,
-    to: undefined,
-  });
 
-  // Функция для формирования ключа запроса
-  const getKey: any = (pageIndex: number, previousPageData: Claim[]) => {
-    if (previousPageData && !previousPageData.length) return null; // Останавливаемся, если предыдущая страница пустая
+  const [cursors, setCursors] = useState<Array<number>>([-1]);
+  const [page, setPage] = useState(0);
+  const [cursor, setCursor] = useState('-1');
+  const [disabledForward, setDisabledForward] = useState(false);
 
-    const afterId = pageIndex > 0 && data?.[pageIndex - 1]?.length
-      ? data[pageIndex - 1][data[pageIndex - 1].length - 1].id // ID последней заявки на предыдущей странице
-      : undefined;
+  const { data, isLoading, error } = useSWR(
+    `/api/dataFetching/getClaims?page_size=${page_size}&${cursor !== '-1' ? `cursor=${cursor}` : ''}`,
+    (url: string) => axios.get(url).then(res => res.data)
+  );
 
-    return `/api/dataFetching/getClaims${afterId ? `?afterId=${afterId}` : ""}`;
-  };
-
-  // Используем useSWRInfinite для загрузки данных
-  const { data, error } = useSWRInfinite(getKey, fetcher, {
-    revalidateFirstPage: false,
-  });
-
-  // Все загруженные данные
-  const allClaims = useMemo(() => (data ? data.flat() : []), [data]);
-
-  // Данные для текущей страницы
-  const currentClaims = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    const end = start + PAGE_SIZE;
-    return allClaims.slice(start, end);
-  }, [allClaims, currentPage]);
-
-  const isLoadingInitialData = !data && !error;
-
-  // Настройка таблицы
-  const table = useReactTable({
-    columns,
-    data: currentClaims,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    state: {
-      columnFilters,
-    },
-  });
-
-  // Обработчик фильтрации по дате
-  const handleDateFilter = (range: DateRange | undefined) => {
-    setDateRange(range);
-    table.getColumn("datetime")?.setFilterValue(range);
-  };
-
-  // Обработчик фильтрации по статусу
-  const handleStatusFilter = (status: string) => {
-    if (status === "all") {
-      table.getColumn("status")?.setFilterValue(undefined);
+  useEffect(() => {
+    if (data && data.length < page_size) {
+      setDisabledForward(true);
     } else {
-      table.getColumn("status")?.setFilterValue(status);
+      setDisabledForward(false);
     }
-  };
+  }, [data])
 
+  const table = useReactTable({
+    data: data || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
-  // Обработка ошибок
   if (error) {
     return (
       <AdminLayout>
         <div className="flex flex-col text-3xl h-full w-full items-center justify-center">
-          <p>Ошибка загрузки данных: {error.message}</p>
+          <p>Ошибка загрузки данных:<br />{error.message}</p>
         </div>
       </AdminLayout>
     )
   }
 
   // Отображение загрузки
-  if (isLoadingInitialData) {
+  if (isLoading) {
     return (
       <AdminLayout>
         <div className="flex flex-col h-full w-full items-center justify-center">
@@ -218,119 +131,43 @@ export default function ClaimsPage() {
     <AdminLayout>
       <div className="flex gap-5 w-full h-full justify-between items-center">
         <div className="w-full h-full flex flex-col justify-between space-y-4">
-          <div className="w-full space-y-4">
-            {/* Фильтры */}
-            <div className="flex gap-4 p-4 bg-gray-50 rounded-lg border">
-              <div className="w-full max-w-[300px]">
-                <Select
-                  onValueChange={(value) => handleStatusFilter(value ? value : '')}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Фильтр по статусу" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Все статусы</SelectItem>
-                    {statusOptions.map((status) => (
-                      <SelectItem key={status.label} value={status.label}>
-                        {status.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="w-full max-w-[300px]">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      id="date"
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !dateRange && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {dateRange?.from ? (
-                        dateRange.to ? (
-                          <>
-                            {format(dateRange.from, "dd.MM.yyyy")} -{" "}
-                            {format(dateRange.to, "dd.MM.yyyy")}
-                          </>
-                        ) : (
-                          format(dateRange.from, "dd.MM.yyyy")
-                        )
-                      ) : (
-                        <span>Фильтр по дате</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      initialFocus
-                      mode="range"
-                      defaultMonth={dateRange?.from}
-                      selected={dateRange}
-                      onSelect={handleDateFilter}
-                      numberOfMonths={2}
-                      weekStartsOn={1}
-                    />
-                    <div className="p-2 flex justify-between">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setDateRange({
-                            from: new Date(),
-                            to: addDays(new Date(), 7),
-                          });
-                          handleDateFilter({
-                            from: new Date(),
-                            to: addDays(new Date(), 7),
-                          });
-                        }}
-                      >
-                        Эта неделя
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setDateRange({
-                            from: new Date(),
-                            to: addDays(new Date(), 30),
-                          });
-                          handleDateFilter({
-                            from: new Date(),
-                            to: addDays(new Date(), 30),
-                          });
-                        }}
-                      >
-                        Этот месяц
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setDateRange(undefined);
-                          handleDateFilter(undefined);
-                        }}
-                      >
-                        Сбросить
-                      </Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
+          <div className="w-full space-y-4 flex h-full flex-col justify-between">
 
             {/* Таблица */}
             <div className="overflow-x-auto rounded-lg border shadow-sm">
-              <MyClaimsTable table={table} />
+              {
+                data.length !== 0 ?
+                  <MyClaimsTable table={table} /> :
+                  <div className="flex w-full justify-center text-3xl p-10">
+                    Дальше пусто :(
+                  </div>
+              }
             </div>
-          </div>
-          {/* Пагинация */}
-          <div className="flex justify-between items-center px-4">
+
+            <div className="flex w-full justify-center gap-5">
+              <Button onClick={() => {
+                setCursor('' + cursors[page - 1])
+                setPage((prev) => {
+                  return prev - 1
+                })
+                setDisabledForward(false);
+              }}
+                disabled={page === 0}
+              >
+                <ChevronsLeft />
+              </Button>
+
+              <Button onClick={() => {
+                const newCursor = data[data.length - 1].id
+                setCursors((prev) => prev.concat(newCursor));
+                setCursor(newCursor);
+                setPage((prev) => prev + 1)
+              }}
+                disabled={disabledForward}
+              >
+                <ChevronsRight />
+              </Button>
+            </div>
 
           </div>
         </div>

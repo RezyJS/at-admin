@@ -11,17 +11,17 @@ export enum ClaimStatus {
 // Интерфейс заявки
 export interface Claim {
   id: number;
-  category: string;
+  uid: number;
   title: string;
   description: string;
+  category: string;
   status: string;
   photos: string[] | null;
+  latitude: number;
+  longitude: number;
   feedback: string;
   datetime: string;
-  latitude: string;
-  longitude: string;
-  user: number;
-}
+};
 
 // Компонент Status
 const Status = ({ status }: { status: ClaimStatus }) => {
