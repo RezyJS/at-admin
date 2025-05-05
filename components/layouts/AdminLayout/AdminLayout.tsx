@@ -22,15 +22,17 @@ export default function AdminLayout({ children, className }: { children?: ReactN
 
   return (
     <div className={className ? className : `flex flex-col p-2 gap-2 w-full h-full`}>
-      <div className="flex w-full h-max justify-between rounded-md items-center p-3 bg-black">
-        <div className="flex gap-3">
-          <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('claims')}>Заявки</Button>
-          <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('announcements')}>Объявления</Button>
-          <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('administrators')}>Администраторы</Button>
+      <div className="rounded-md border-2 border-black p-3 h-full w-full flex flex-col gap-5">
+        <div className="flex w-full h-max justify-between rounded-md items-center p-3 bg-black">
+          <div className="flex gap-3">
+            <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('claims')}>Заявки</Button>
+            <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('announcements')}>Объявления</Button>
+            <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('administrators')}>Администраторы</Button>
+          </div>
+          <Button variant={'destructive'} className="rounded-sm" onClick={handleSignOut}>Выйти</Button>
         </div>
-        <Button variant={'destructive'} className="rounded-sm" onClick={handleSignOut}>Выйти</Button>
+        <div className="flex-1 w-full">{children}</div>
       </div>
-      <div className="rounded-md border-2 border-black p-3 h-full w-full">{children}</div>
     </div>
   );
 }

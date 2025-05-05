@@ -15,21 +15,19 @@ export function MyClaimsTable({ table }: { table: TypeTable<Claim> }) {
 
   return (
     <MyTable table={table}>
-      <TableBody>
-        {table.getRowModel().rows.map((row) => (
-          <TableRow
-            key={row.id}
-            className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
-            onClick={() => router.push(`/admin_panel/claims/${row.original.id}?id=${row.original.id}`)}
-          >
-            {row.getVisibleCells().map((cell) => (
-              <TableCell key={cell.id} className="py-3 px-4 text-gray-600 text-sm">
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
+      {table.getRowModel().rows.map((row) => (
+        <TableRow
+          key={row.id}
+          className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
+          onClick={() => router.push(`/admin_panel/claims/${row.original.id}?id=${row.original.id}`)}
+        >
+          {row.getVisibleCells().map((cell) => (
+            <TableCell key={cell.id} className="py-3 px-4 text-gray-600 text-sm">
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
     </MyTable>
   );
 }
@@ -40,21 +38,19 @@ export function MyNewsTable({ table }: { table: TypeTable<Announcement> }) {
 
   return (
     <MyTable table={table}>
-      <TableBody>
-        {table.getRowModel().rows.map((row) => (
-          <TableRow
-            key={row.id}
-            className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
-            onClick={() => router.push(`/admin_panel/announcements/${row.original.id}`)}
-          >
-            {row.getVisibleCells().map((cell) => (
-              <TableCell key={cell.id} className="py-3 px-4 text-gray-600 text-sm">
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
+      {table.getRowModel().rows.map((row) => (
+        <TableRow
+          key={row.id}
+          className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
+          onClick={() => router.push(`/admin_panel/announcements/${row.original.id}`)}
+        >
+          {row.getVisibleCells().map((cell) => (
+            <TableCell key={cell.id} className="py-3 px-4 text-gray-600 text-sm">
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
     </MyTable>
   );
 }
@@ -62,20 +58,18 @@ export function MyNewsTable({ table }: { table: TypeTable<Announcement> }) {
 export function MyAdminTable({ table }: { table: TypeTable<Admin> }) {
   return (
     <MyTable table={table}>
-      <TableBody>
-        {table.getRowModel().rows.map((row) => (
-          <TableRow
-            key={row.id}
-            className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
-          >
-            {row.getVisibleCells().map((cell) => (
-              <TableCell key={cell.id} className="py-3 px-4 text-gray-600 text-sm">
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
+      {table.getRowModel().rows.map((row) => (
+        <TableRow
+          key={row.id}
+          className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
+        >
+          {row.getVisibleCells().map((cell) => (
+            <TableCell key={cell.id} className="py-3 px-4 text-gray-600 text-sm">
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
     </MyTable>
   );
 }
@@ -96,7 +90,9 @@ function MyTable({ table, children }: { table: TypeTable<any>, children?: ReactN
             </TableRow>
           ))}
         </TableHeader>
-        {children}
+        <TableBody>
+          {children}
+        </TableBody>
       </Table>
     </div>
   );

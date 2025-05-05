@@ -95,6 +95,12 @@ export default function AdministratorsPage() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: 10
+      }
+    }
   });
 
   if (error) {
@@ -119,7 +125,7 @@ export default function AdministratorsPage() {
 
   return (
     <AdminLayout className="flex flex-col p-2 gap-2 w-full h-full">
-      <div className="h-full w-full flex flex-col gap-8">
+      <div className="h-full w-full flex flex-col gap-5">
         <div className="flex flex-col justify-start gap-5 lg:flex-row items-baseline lg:justify-between">
           <p className="text-3xl font-bold">Список Администраторов:</p>
           <div className="flex flex-col gap-2">
@@ -155,7 +161,7 @@ export default function AdministratorsPage() {
             </Dialog>
           </div>
         </div>
-        <div className="overflow-x-auto overflow-y-auto rounded-lg border shadow-sm">
+        <div className="overflow-x-auto overflow-y-auto rounded-lg border shadow-sm max-h-[80vh]">
           <MyAdminTable table={table} />
         </div>
       </div>
