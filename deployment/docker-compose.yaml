@@ -14,5 +14,5 @@ services:
 
 networks:
   at-network:
-    external:
-      name: active-tver_at-network
+    name: active-tver_at-network
+    external: true
