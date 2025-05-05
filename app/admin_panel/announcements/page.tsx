@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
-import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
+import { ColumnDef, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
 import useSWRInfinite from 'swr/infinite';
 import axios from 'axios';
 import { useMemo, useState } from 'react';
@@ -16,11 +15,11 @@ import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import getShortText from '@/helpers/getShortText';
-import { useRouter } from 'next/navigation';
+import { MyNewsTable } from '@/components/Table/Table';
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
-type Announcement = {
+export type Announcement = {
   id: number;
   title: string;
   description: string;
@@ -83,8 +82,6 @@ const columns: ColumnDef<Announcement>[] = [
 const PAGE_SIZE = 10;
 
 export default function AnnouncementsPage() {
-
-  const router = useRouter();
 
   const [currentPage, setCurrentPage] = useState(1);
   const [columnFilters, setColumnFilters] = useState<any>([]);
@@ -286,34 +283,7 @@ export default function AnnouncementsPage() {
 
             {/* Таблица */}
             <div className="overflow-x-auto rounded-lg border shadow-sm">
-              <Table>
-                <TableHeader className="bg-gray-50">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead key={header.id} className="py-3 px-4 font-semibold text-gray-700 text-left">
-                          {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                        </TableHead>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
-                      onClick={() => router.push(`/admin_panel/announcements/${row.original.id}`)}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="py-3 px-4 text-gray-600 text-sm">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <MyNewsTable table={table} />
             </div>
           </div>
           {/* Пагинация */}

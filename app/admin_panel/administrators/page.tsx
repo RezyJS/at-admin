@@ -3,8 +3,7 @@
 import AdminLayout from "@/components/layouts/AdminLayout/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ColumnDef, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, getFilteredRowModel, useReactTable } from "@tanstack/react-table";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -19,10 +18,11 @@ import {
   DialogTrigger,
   DialogClose
 } from "@/components/ui/dialog"
+import { MyAdminTable } from "@/components/Table/Table";
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
-type Admin = {
+export type Admin = {
   email: string,
   is_super_admin: boolean
 }
@@ -95,15 +95,16 @@ export default function AdministratorsPage() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel()
   });
 
   if (error) {
-    return <AdminLayout>
-      <div className="flex h-full w-full justify-center items-center">
-        Видимо, какие-то неполадки...
-      </div>
-    </AdminLayout>
+    return (
+      <AdminLayout>
+        <div className="flex h-full w-full justify-center items-center">
+          Видимо, какие-то неполадки...
+        </div>
+      </AdminLayout>
+    );
   }
 
   if (isLoading) {
@@ -119,7 +120,7 @@ export default function AdministratorsPage() {
   return (
     <AdminLayout className="flex flex-col p-2 gap-2 w-full h-full">
       <div className="h-full w-full flex flex-col gap-8">
-        <div className="flex flex-col lg:flex-row gap-5 items-baseline">
+        <div className="flex flex-col justify-start gap-5 lg:flex-row items-baseline lg:justify-between">
           <p className="text-3xl font-bold">Список Администраторов:</p>
           <div className="flex flex-col gap-2">
             <Dialog>
@@ -154,34 +155,8 @@ export default function AdministratorsPage() {
             </Dialog>
           </div>
         </div>
-        <div className="overflow-x-auto rounded-lg border shadow-sm">
-          <Table>
-            <TableHeader className="bg-gray-50">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} className="py-3 px-4 font-semibold text-gray-700 text-left">
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-3 px-4 text-gray-600 text-sm">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <div className="overflow-x-auto overflow-y-auto rounded-lg border shadow-sm">
+          <MyAdminTable table={table} />
         </div>
       </div>
     </AdminLayout>

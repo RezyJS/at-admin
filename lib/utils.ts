@@ -5,6 +5,14 @@ import { FetcherResult } from './fetcher';
 
 export const apiURL = process.env.NEXT_PUBLIC_API_URL;
 
+// utils/mockAdmins.ts
+export const generateMockAdmins = (count: number) => {
+  return Array.from({ length: count }, (_, i) => ({
+    email: `admin${i + 1}@example.com`,
+    is_super_admin: Math.random() > 0.5
+  }));
+};
+
 export const afterFetcher = (
   apiRequest: FetcherResult,
   body?: 'claims' | 'news' | 'admins'
