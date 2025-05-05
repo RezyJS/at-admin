@@ -35,7 +35,7 @@ export default function AdministratorsPage() {
   }
 
   return (
-    <AdminLayout className="flex flex-col p-2 gap-2 w-full h-auto">
+    <AdminLayout className="flex flex-col p-2 gap-2 w-full h-full">
       <div className="h-full w-full flex flex-col gap-8">
         <div className="flex flex-col lg:flex-row gap-5 items-baseline">
           <p className="text-3xl font-bold">Список Администраторов:</p>

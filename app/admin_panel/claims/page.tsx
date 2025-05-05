@@ -6,7 +6,7 @@ import AdminLayout from "@/components/layouts/AdminLayout/AdminLayout";
 import { ColumnDef, ColumnFiltersState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table";
 import useSWRInfinite from "swr/infinite";
 import axios from "axios";
-import Status from "@/components/Status/Status";
+import Status, { ClaimStatus } from "@/components/Status/Status";
 import getShortText from "@/helpers/getShortText";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useRouter } from "next/navigation";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
@@ -38,11 +39,24 @@ type Claim = {
 
 const statusOptions = [
   { value: "pending", label: "В ожидании" },
-  { value: "test", label: "в обработке" },
   { value: "accepted", label: "В работе" },
   { value: "completed", label: "Завершено" },
   { value: "declined", label: "Отклонено" },
 ];
+
+const statusParser = {
+  'pending': ClaimStatus.PENDING,
+  "accepted": ClaimStatus.ACCEPTED,
+  "completed": ClaimStatus.COMPLETED,
+  "declined": ClaimStatus.DECLINED,
+}
+
+const statuses = [
+  "pending",
+  "accepted",
+  "completed",
+  "declined",
+]
 
 const columns: ColumnDef<Claim>[] = [
   {
@@ -53,9 +67,14 @@ const columns: ColumnDef<Claim>[] = [
   {
     accessorKey: "status",
     header: "Статус",
-    cell: ({ row }) => (
-      <Status status={row.getValue("status")} />
-    ),
+    cell: ({ row }) => {
+      const status: 'pending' | 'accepted' | 'completed' | 'declined' = row.getValue('status');
+      if (!statuses.includes(status)) {
+        return <Status status={ClaimStatus.PENDING} />
+      }
+
+      return <Status status={statusParser[status]} />
+    },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
@@ -66,9 +85,9 @@ const columns: ColumnDef<Claim>[] = [
     cell: ({ row }) => {
       const title = row.getValue("title") as string;
       return (
-        <a href={`/admin_panel/claims/${row.original.id}?id=${row.original.id}`} className="text-blue-500 hover:underline max-w-prose break-words hyphens-auto leading-relaxed">
+        <p className="max-w-prose break-words hyphens-auto leading-relaxed">
           {title}
-        </a>
+        </p>
       );
     },
   },
@@ -108,9 +127,10 @@ const columns: ColumnDef<Claim>[] = [
   }
 ];
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 20;
 
 export default function ClaimsPage() {
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -258,151 +278,153 @@ export default function ClaimsPage() {
   return (
     <AdminLayout>
       <div className="flex gap-5 w-full h-full justify-between items-center">
-        <div className="w-full space-y-4">
-          {/* Фильтры */}
-          <div className="flex gap-4 p-4 bg-gray-50 rounded-lg border">
-            <div className="w-full max-w-[300px]">
-              <Select
-                onValueChange={(value) => handleStatusFilter(value ? value : '')}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Фильтр по статусу" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Все статусы</SelectItem>
-                  {statusOptions.map((status) => (
-                    <SelectItem key={status.label} value={status.label}>
-                      {status.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+        <div className="w-full h-full flex flex-col justify-between space-y-4">
+          <div className="w-full space-y-4">
+            {/* Фильтры */}
+            <div className="flex gap-4 p-4 bg-gray-50 rounded-lg border">
+              <div className="w-full max-w-[300px]">
+                <Select
+                  onValueChange={(value) => handleStatusFilter(value ? value : '')}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Фильтр по статусу" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Все статусы</SelectItem>
+                    {statusOptions.map((status) => (
+                      <SelectItem key={status.label} value={status.label}>
+                        {status.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="w-full max-w-[300px]">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    id="date"
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !dateRange && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {dateRange?.from ? (
-                      dateRange.to ? (
-                        <>
-                          {format(dateRange.from, "dd.MM.yyyy")} -{" "}
-                          {format(dateRange.to, "dd.MM.yyyy")}
-                        </>
+              <div className="w-full max-w-[300px]">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      id="date"
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !dateRange && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {dateRange?.from ? (
+                        dateRange.to ? (
+                          <>
+                            {format(dateRange.from, "dd.MM.yyyy")} -{" "}
+                            {format(dateRange.to, "dd.MM.yyyy")}
+                          </>
+                        ) : (
+                          format(dateRange.from, "dd.MM.yyyy")
+                        )
                       ) : (
-                        format(dateRange.from, "dd.MM.yyyy")
-                      )
-                    ) : (
-                      <span>Фильтр по дате</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    initialFocus
-                    mode="range"
-                    defaultMonth={dateRange?.from}
-                    selected={dateRange}
-                    onSelect={handleDateFilter}
-                    numberOfMonths={2}
-                    weekStartsOn={1}
-                  />
-                  <div className="p-2 flex justify-between">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setDateRange({
-                          from: new Date(),
-                          to: addDays(new Date(), 7),
-                        });
-                        handleDateFilter({
-                          from: new Date(),
-                          to: addDays(new Date(), 7),
-                        });
-                      }}
-                    >
-                      Эта неделя
+                        <span>Фильтр по дате</span>
+                      )}
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setDateRange({
-                          from: new Date(),
-                          to: addDays(new Date(), 30),
-                        });
-                        handleDateFilter({
-                          from: new Date(),
-                          to: addDays(new Date(), 30),
-                        });
-                      }}
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      initialFocus
+                      mode="range"
+                      defaultMonth={dateRange?.from}
+                      selected={dateRange}
+                      onSelect={handleDateFilter}
+                      numberOfMonths={2}
+                      weekStartsOn={1}
+                    />
+                    <div className="p-2 flex justify-between">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setDateRange({
+                            from: new Date(),
+                            to: addDays(new Date(), 7),
+                          });
+                          handleDateFilter({
+                            from: new Date(),
+                            to: addDays(new Date(), 7),
+                          });
+                        }}
+                      >
+                        Эта неделя
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setDateRange({
+                            from: new Date(),
+                            to: addDays(new Date(), 30),
+                          });
+                          handleDateFilter({
+                            from: new Date(),
+                            to: addDays(new Date(), 30),
+                          });
+                        }}
+                      >
+                        Этот месяц
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setDateRange(undefined);
+                          handleDateFilter(undefined);
+                        }}
+                      >
+                        Сбросить
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+
+            {/* Таблица */}
+            <div className="overflow-x-auto rounded-lg border shadow-sm">
+              <Table className="w-full">
+                <TableHeader className="bg-gray-50">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id} className="hover:bg-gray-50">
+                      {headerGroup.headers.map((header) => (
+                        <TableHead
+                          key={header.id}
+                          className="py-3 px-4 font-semibold text-gray-700 text-left"
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
+                      onClick={() => router.push(`/admin_panel/claims/${row.original.id}?id=${row.original.id}`)}
                     >
-                      Этот месяц
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setDateRange(undefined);
-                        handleDateFilter(undefined);
-                      }}
-                    >
-                      Сбросить
-                    </Button>
-                  </div>
-                </PopoverContent>
-              </Popover>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="py-3 px-4 text-gray-600 text-sm"
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </div>
-
-          {/* Таблица */}
-          <div className="overflow-x-auto rounded-lg border shadow-sm">
-            <Table className="w-full">
-              <TableHeader className="bg-gray-50">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id} className="hover:bg-gray-50">
-                    {headerGroup.headers.map((header) => (
-                      <TableHead
-                        key={header.id}
-                        className="py-3 px-4 font-semibold text-gray-700 text-left"
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="py-3 px-4 text-gray-600 text-sm"
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
           {/* Пагинация */}
           <div className="flex justify-between items-center px-4">
             <Button
