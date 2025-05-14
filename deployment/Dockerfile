@@ -16,6 +16,8 @@ COPY pnpm-lock.yaml package.json .npmrc* ./
 # PNPM install (--frozen-lockfile = zero surprises)
 RUN pnpm install --frozen-lockfile
 
+COPY public/ public
+
 # Copy rest and build
 COPY . .
 RUN pnpm build

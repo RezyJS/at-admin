@@ -27,11 +27,18 @@ export default function CheckCodeForm({ callback, email }: { callback: Function,
             icon: <CheckCircle2 />
           })
         })
-        .catch(() => {
-          toast('Ошибка!', {
-            description: 'Неправильный код',
-            closeButton: true,
-          })
+        .catch((error) => {
+          if (error.status === 403) {
+            toast('Ошибка!', {
+              description: error.statusText,
+              closeButton: true,
+            })
+          } else {
+            toast('Ошибка!', {
+              description: 'Неправильный код',
+              closeButton: true,
+            })
+          }
         })
         .finally(() => {
           setIsLoading(false);

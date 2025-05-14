@@ -15,11 +15,11 @@ import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 const NewsData = ({ data }: { data: any }) => (
   <div className='px-[20px] min-w-[320px] text-left text-pretty w-[75vw] mx-auto'>
     <div className="text-pretty text-2xl font-bold">
-      <Markdown>{data.title}</Markdown>
+      <Markdown>{data.Title}</Markdown>
     </div>
-    <p className='text-pretty text-neutral-500 relative after:content-[""] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-neutral-200 pb-2'>Опубликовано: {data.datetime.slice(0, 11)}</p>
+    <p className='text-pretty text-neutral-500 relative after:content-[""] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-neutral-200 pb-2'>Опубликовано: {('' + new Date(data.Datetime).toLocaleString("ru-RU", { timeZone: "Europe/Moscow" })).slice(0, 10)}</p>
     <div className='text-pretty pt-2 text-lg text-left font-medium'>
-      <Markdown>{data.description}</Markdown>
+      <Markdown>{data.Description}</Markdown>
     </div>
   </div>
 );

@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
   const response = new NextResponse();
   response.cookies.delete('access_token');
   response.cookies.delete('refresh_token');
+  response.cookies.delete('isa');
 
   return response;
 }

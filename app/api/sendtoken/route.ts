@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
-import { apiURL } from '@/lib/utils';
+import { apiURL, baseURL } from '@/lib/utils';
 
 export async function POST(request: NextRequest) {
   const { email, code } = await request.json();
@@ -11,6 +11,16 @@ export async function POST(request: NextRequest) {
   });
 
   const { access_token, refresh_token } = apiResponse.data;
+
+  const { is_admin, is_super_admin } = await axios
+    .post(`${baseURL}/api/dataFetching/checkAdmin`, {
+      refresh_token,
+      access_token
+    })
+    .then((res) => res.data.privileges);
+
+  if (is_admin === false)
+    return NextResponse.json({ error: 'Вы не админ!' }, { status: 403 });
 
   const response = new NextResponse();
 
@@ -24,6 +34,12 @@ export async function POST(request: NextRequest) {
   response.cookies.set('access_token', access_token, {
     httpOnly: true,
     maxAge: 15 * 60,
+    secure: true,
+    sameSite: 'strict'
+  });
+
+  response.cookies.set('isa', is_super_admin, {
+    httpOnly: true,
     secure: true,
     sameSite: 'strict'
   });

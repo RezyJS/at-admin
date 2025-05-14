@@ -1,20 +1,19 @@
-import { apiURL } from '@/lib/utils';
-import axios from 'axios';
+import fetcher from '@/lib/fetcher';
+import { afterFetcher, apiURL } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
-  const token = request.cookies.get('access_token')?.value;
+export async function POST(request: NextRequest) {
+  const { refresh_token, access_token } = await request.json();
 
-  // TODO: add refresh for tokens
-  if (!token) {
+  const apiRequest = await fetcher({
+    url: `${apiURL}/admin/v1/admins/privileges`,
+    refresh: refresh_token,
+    access: access_token
+  });
+
+  if (apiRequest.error) {
     return NextResponse.error();
   }
 
-  const apiResponse = await axios.get(`${apiURL}/admin/v1/admins/privileges`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  return NextResponse.json(apiResponse.data);
+  return afterFetcher(apiRequest);
 }

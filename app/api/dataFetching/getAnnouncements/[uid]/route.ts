@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const access = request.cookies.get('access_token')?.value;
 
   const apiRequest = await fetcher({
-    url: `${apiURL}/v1/announcements/${id}`,
+    url: `${apiURL}/admin/v1/announcements/${id}`,
     refresh,
     access
   });
@@ -17,6 +17,8 @@ export async function GET(request: NextRequest) {
   if (apiRequest.error) {
     return NextResponse.error();
   }
+
+  console.info(apiRequest.body);
 
   return afterFetcher(apiRequest);
 }
