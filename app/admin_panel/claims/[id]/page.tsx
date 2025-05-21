@@ -13,12 +13,23 @@ import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import { format } from 'date-fns';
 import ChangeClaimSelect from '@/components/Claims/ChangeClaimInfo/Select/ChangeClaimSelect';
 import ChangeClaimTextArea from '@/components/Claims/ChangeClaimInfo/TextArea/TextArea';
+import CarouselDApiDemo from '@/components/Claims/ClaimsPhotosCarousel/Carousel';
+import { baseURL } from '@/lib/utils';
 
 const ClaimData = ({ data }: { data: any }) => (
-  <div className='px-[20px] min-w-[320px] text-left text-pretty w-[75vw] mx-auto'>
-    <h1 className="text-pretty text-2xl font-bold w-[75vw]" style={{ wordWrap: 'break-word' }}>{data.title}</h1>
-    <p className='text-pretty text-neutral-500 relative after:content-[""] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-neutral-200 pb-2'>Опубликовано: {format(new Date(data.datetime), 'dd.MM.yyyy')}</p>
-    <p className='text-pretty pt-2 text-lg text-left font-medium'>{data.description}</p>
+  <div className='flex flex-col gap-8'>
+    <div className='px-[20px] min-w-[320px] text-left text-pretty w-[75vw] mx-auto'>
+      <h1 className="text-pretty text-2xl font-bold w-[75vw]" style={{ wordWrap: 'break-word' }}>{data.title}</h1>
+      <p className='text-pretty text-neutral-500 relative after:content-[""] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-neutral-200 pb-2'>Опубликовано: {format(new Date(data.datetime), 'dd.MM.yyyy')}</p>
+      <p className='text-pretty pt-2 text-lg text-left font-medium'>{data.description}</p>
+    </div>
+    <div className='w-full'>
+      {
+        data.photos.length > 0 ?
+          <CarouselDApiDemo url={data.photos} /> :
+          <></>
+      }
+    </div>
   </div>
 );
 
@@ -34,20 +45,18 @@ const ClaimSkeleton = () => (
 
 const ClaimChanger = ({ id, data }: { id: string, data: any }) => {
   return (
-    <div className='px-[20px] min-w-[320px] text-left text-pretty w-[75vw] mx-auto flex justify-between items-end'>
-      <div className='flex w-full gap-8'>
-        <div className='flex flex-col'>
-          <p>Ответ:</p>
-          <ChangeClaimTextArea id={id} />
-        </div>
-        <div>
-          <p>Статус:</p>
-          <ChangeClaimSelect data={data} id={id} />
-        </div>
-        <div className='flex w-full justify-end items-start'>
-          {/* TODO: Make it work */}
-          <Button variant={'destructive'}>Удалить</Button>
-        </div>
+    <div className='flex flex-col w-full gap-8'>
+      <div className='flex w-full justify-end items-start'>
+        {/* TODO: Make it work */}
+        <Button variant={'destructive'} className='w-full'>Удалить</Button>
+      </div>
+      <div>
+        <p>Статус:</p>
+        <ChangeClaimSelect data={data} id={id} />
+      </div>
+      <div className='flex flex-col'>
+        <p>Ответ:</p>
+        <ChangeClaimTextArea id={id} />
       </div>
     </div>
   );
@@ -56,21 +65,25 @@ const ClaimChanger = ({ id, data }: { id: string, data: any }) => {
 const Wrapper = ({ router, children, params, isLoading, data }: { router: AppRouterInstance, children: React.ReactNode, params: Promise<{ id: string }>, isLoading: boolean, data: any }) => {
   const { id } = React.use(params);
   return (
-    <div className="w-full flex flex-col py-6">
-      <div className='flex flex-col gap-8'>
-        <div className='px-4 flex justify-end'>
-          <Button onClick={() => router.back()} className='w-12 h-12 bg-red-500 hover:bg-red-700'>
-            <X />
-          </Button>
+    <div className='w-full flex flex-col gap-4'>
+      <div className='flex justify-end'>
+        <Button onClick={() => router.push(`${baseURL}/admin_panel/claims`)} className='w-12 h-12 bg-red-500 hover:bg-red-700'>
+          <X />
+        </Button>
+      </div>
+      <div className='flex justify-between gap-1 px-8'>
+        <div>
+          {
+            isLoading ?
+              <div className='w-full flex justify-center'>
+                <Loader2 className='animate-spin w-12 h-12' />
+              </div> :
+              <ClaimChanger id={id} data={data} />
+          }
         </div>
-        {
-          isLoading ?
-            <div className='w-full flex justify-center'>
-              <Loader2 className='animate-spin w-12 h-12' />
-            </div> :
-            <ClaimChanger id={id} data={data} />
-        }
-        {children}
+        <div className='before:w-0.5 before:h-full before:bg-black'>
+          {children}
+        </div>
       </div>
     </div>
   );

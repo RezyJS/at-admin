@@ -10,7 +10,7 @@ export default function ChangeClaimSelect({ data, id }: { data: any, id: string 
       onValueChange={(val) => {
         axios.post('/api/dataFetching/updateClaims/updateStatus', { status: val, id }).then(() => toast('Статус обновлён!'));
       }}>
-      <SelectTrigger className='w-[180px]'>
+      <SelectTrigger className='w-full'>
         <SelectValue placeholder="Статус" />
       </SelectTrigger>
       <SelectContent>

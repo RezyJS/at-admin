@@ -8,18 +8,16 @@ import type { Table as TypeTable } from "@tanstack/react-table";
 import { ComponentType, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react";
 import { useRouter } from "next/navigation";
 import { Claim } from "../Status/Status";
+import { baseURL } from "@/lib/utils";
 
 export function MyClaimsTable({ table }: { table: TypeTable<Claim> }) {
-
-  const router = useRouter();
-
   return (
     <MyTable table={table}>
       {table.getRowModel().rows.map((row) => (
         <TableRow
           key={row.id}
           className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
-          onClick={() => router.push(`/admin_panel/claims/${row.original.id}?id=${row.original.id}`)}
+          onClick={() => window.open(`${baseURL}/admin_panel/claims/${row.original.id}?id=${row.original.id}`)}
         >
           {row.getVisibleCells().map((cell) => (
             <TableCell key={cell.id} className="py-3 px-4 text-gray-600 text-sm">

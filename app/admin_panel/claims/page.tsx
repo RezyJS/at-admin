@@ -11,6 +11,7 @@ import useSWR from "swr";
 import { MyClaimsTable } from "@/components/Table/Table";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
+import { baseURL } from "@/lib/utils";
 
 type Claim = {
   id: number;
@@ -82,7 +83,12 @@ const columns: ColumnDef<Claim>[] = [
     cell: ({ row }) => {
       const id = row.getValue("id");
       return (
-        <PenBox className="w-auto h-auto text-black hover:bg-gray-300 p-2 rounded-md" onClick={(e) => { e.stopPropagation(); location.assign(`claims/${id}?id=108`) }} />
+        <PenBox
+          className="w-auto h-auto text-black hover:bg-gray-300 p-2 rounded-md"
+          onClick={(e) => {
+            e.stopPropagation();
+            window.open(`${baseURL}/admin_panel/claims/${id}?id=${id}`)
+          }} />
       );
     }
   }
