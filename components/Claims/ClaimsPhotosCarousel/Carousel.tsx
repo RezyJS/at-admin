@@ -29,13 +29,13 @@ export default function CarouselDApiDemo({ url }: { url: string[] }) {
   }, [api])
 
   return (
-    <div className="mx-auto flex items-center flex-col">
+    <div className="flex flex-col items-center">
       <Carousel setApi={setApi} className="w-full max-w-sm">
         <CarouselContent>
           {Array.from({ length: url.length }).map((_, index) => (
             <CarouselItem key={index}>
               <Card>
-                <CardContent className="flex aspect-square items-center justify-center p-6">
+                <CardContent className="flex aspect-square items-center justify-center px-4">
                   <img src={url[index]} />
                 </CardContent>
               </Card>
@@ -46,7 +46,7 @@ export default function CarouselDApiDemo({ url }: { url: string[] }) {
         <CarouselNext />
       </Carousel>
       <div className="py-2 text-center text-sm text-muted-foreground">
-        Slide {current} of {count}
+        Картинка {current} из {count}
       </div>
     </div>
   )
