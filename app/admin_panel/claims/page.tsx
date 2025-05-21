@@ -27,7 +27,7 @@ type Claim = {
 };
 
 const statusParser = {
-  'pending': ClaimStatus.PENDING,
+  "pending": ClaimStatus.PENDING,
   "accepted": ClaimStatus.ACCEPTED,
   "completed": ClaimStatus.COMPLETED,
   "declined": ClaimStatus.DECLINED,

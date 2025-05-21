@@ -8,9 +8,12 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import useSWR from 'swr';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, X } from 'lucide-react';
+import { ArrowUp, Loader2, X } from 'lucide-react';
 import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import { format } from 'date-fns';
+import { Select, SelectGroup, SelectValue, SelectContent, SelectItem, SelectLabel, SelectTrigger } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
 
 const ClaimData = ({ data }: { data: any }) => (
   <div className='px-[20px] min-w-[320px] text-left text-pretty w-[75vw] mx-auto'>
@@ -30,16 +33,94 @@ const ClaimSkeleton = () => (
   </div>
 );
 
-const Wrapper = ({ router, children }: { router: AppRouterInstance, children: React.ReactNode }) => (
-  <div className="w-full flex flex-col py-6">
-    <div className='px-4 flex justify-end'>
-      <Button onClick={() => router.back()} className='w-12 h-12 bg-red-500 hover:bg-red-700'>
-        <X />
-      </Button>
+const ClaimChanger = ({ id, data }: { id: string, data: any }) => {
+  const [feedback, setFeedback] = useState('');
+  return (
+    <div className='px-[20px] min-w-[320px] text-left text-pretty w-[75vw] mx-auto flex justify-between items-end'>
+      <div className='flex gap-8'>
+        <div className='flex flex-col'>
+          <p>Ответ:</p>
+          <div className='flex flex-col gap-3'>
+            <Textarea className='w-[360px] min-h-[40px] h-[40px] max-h-[100px]'
+              value={feedback}
+              onChange={(e) => {
+                setFeedback(e.currentTarget.value);
+              }} />
+            <Button
+              onClick={() => {
+                axios.post('/api/dataFetching/updateClaims/updateFeedback', { feedback, id }).then(() => toast('Сообщение отправлено!'));
+              }}
+            >Отправить</Button>
+          </div>
+        </div>
+        <div>
+          <p>Статус:</p>
+          <Select
+            defaultValue={data.status}
+            onValueChange={(val) => {
+              axios.post('/api/dataFetching/updateClaims/updateStatus', { status: val, id }).then(() => toast('Статус обновлён!'));
+            }}>
+            <SelectTrigger className='w-[180px]'>
+              <SelectValue placeholder="Статус" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Статусы</SelectLabel>
+                <SelectItem value="pending">
+                  <div className='flex items-center justify-between w-[180px]'>
+                    <p>В обработке</p>
+                    <div className='h-2 w-2 rounded-2xl bg-gray-500'></div>
+                  </div>
+                </SelectItem>
+                <SelectItem value="accepted">
+                  <div className='flex items-center justify-between w-[180px]'>
+                    <p>В работе</p>
+                    <div className='h-2 w-2 rounded-2xl bg-blue-500'></div>
+                  </div>
+                </SelectItem>
+                <SelectItem value="completed">
+                  <div className='flex items-center justify-between w-[180px]'>
+                    <p>Завершена</p>
+                    <div className='h-2 w-2 rounded-2xl bg-green-500'></div>
+                  </div>
+                </SelectItem>
+                <SelectItem value="declined">
+                  <div className='flex items-center justify-between w-[180px]'>
+                    <p>Отклонена</p>
+                    <div className='h-2 w-2 rounded-2xl bg-red-500'></div>
+                  </div>
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
     </div>
-    {children}
-  </div>
-);
+  );
+}
+
+const Wrapper = ({ router, children, params, isLoading, data }: { router: AppRouterInstance, children: React.ReactNode, params: Promise<{ id: string }>, isLoading: boolean, data: any }) => {
+  const { id } = React.use(params);
+  return (
+    <div className="w-full flex flex-col py-6">
+      <div className='flex flex-col gap-8'>
+        <div className='px-4 flex justify-end'>
+          <Button onClick={() => router.back()} className='w-12 h-12 bg-red-500 hover:bg-red-700'>
+            <X />
+          </Button>
+        </div>
+        {
+          isLoading ?
+            <div className='w-full flex justify-center'>
+              <Loader2 className='animate-spin w-12 h-12' />
+            </div> :
+            <ClaimChanger id={id} data={data} />
+        }
+        {children}
+      </div>
+    </div>
+  );
+}
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 const getClaimData = (id: string): string => {
@@ -77,7 +158,7 @@ const Claims = ({ params }: { params: Promise<{ id: string }> }) => {
   if (isLoading || error) {
     return (
       <AdminLayout>
-        <Wrapper router={router}>
+        <Wrapper isLoading={isLoading} data={data} params={params} router={router}>
           <ClaimSkeleton />
         </Wrapper>
       </AdminLayout>
@@ -86,7 +167,7 @@ const Claims = ({ params }: { params: Promise<{ id: string }> }) => {
 
   return (
     <AdminLayout>
-      <Wrapper router={router}>
+      <Wrapper isLoading={isLoading} data={data} params={params} router={router}>
         <ClaimData data={data} />
         {showScrollButton && (
           <Button
