@@ -6,14 +6,6 @@ import { FetcherResult } from './fetcher';
 export const apiURL = process.env.NEXT_PUBLIC_API_URL;
 export const baseURL = process.env.NEXT_PUBLIC_URL;
 
-// utils/mockAdmins.ts
-export const generateMockAdmins = (count: number) => {
-  return Array.from({ length: count }, (_, i) => ({
-    email: `admin${i + 1}@example.com`,
-    is_super_admin: Math.random() > 0.5
-  }));
-};
-
 export const afterFetcher = (
   apiRequest: FetcherResult,
   body?: 'claims' | 'news' | 'admins'
@@ -37,14 +29,14 @@ export const afterFetcher = (
     response!.cookies.set('access_token', access, {
       httpOnly: true,
       maxAge: 15 * 60, // 15 minutes
-      secure: true, // Enable in production
+      secure: true,
       sameSite: 'strict'
     });
 
     response!.cookies.set('refresh_token', refresh, {
       httpOnly: true,
       maxAge: 90 * 24 * 60 * 60, // 30 days
-      secure: true, // Enable in production
+      secure: true,
       sameSite: 'strict'
     });
   }

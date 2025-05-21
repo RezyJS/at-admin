@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
 
   const { access_token, refresh_token } = apiResponse.data;
 
-  const { is_admin, is_super_admin } = await axios
+  const { is_admin } = await axios
     .post(`${baseURL}/api/dataFetching/checkAdmin`, {
       refresh_token,
       access_token
@@ -34,12 +34,6 @@ export async function POST(request: NextRequest) {
   response.cookies.set('access_token', access_token, {
     httpOnly: true,
     maxAge: 15 * 60,
-    secure: true,
-    sameSite: 'strict'
-  });
-
-  response.cookies.set('isa', is_super_admin, {
-    httpOnly: true,
     secure: true,
     sameSite: 'strict'
   });

@@ -23,7 +23,7 @@ const columns: ColumnDef<Announcement>[] = [
     accessorKey: 'id',
     header: () => <div className="w-5">ID</div>,
     cell: ({ row }) => <div className="w-5">{row.getValue('id')}</div>,
-    size: 50, // Фиксированная ширина в пикселях
+    size: 50,
   },
   {
     accessorKey: 'title',
@@ -46,7 +46,7 @@ const columns: ColumnDef<Announcement>[] = [
     cell: ({ row }) => {
       const description = row.getValue('description') as string;
       return (
-        <div className="line-clamp-3 overflow-hidden min-w-[200px] max-w-[400px]">
+        <div className="line-clamp-2 overflow-hidden min-w-[200px] max-w-[400px]">
           <Markdown>
             {description}
           </Markdown>

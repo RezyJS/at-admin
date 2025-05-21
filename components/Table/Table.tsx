@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { flexRender } from "@tanstack/react-table";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "../ui/table";
 import { Admin } from "@/app/admin_panel/administrators/page";
 import type { Table as TypeTable } from "@tanstack/react-table";
-import { Announcement } from "@/app/admin_panel/announcements/page";
-import { ReactNode } from "react";
+import { ComponentType, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react";
 import { useRouter } from "next/navigation";
 import { Claim } from "../Status/Status";
 
@@ -32,26 +32,45 @@ export function MyClaimsTable({ table }: { table: TypeTable<Claim> }) {
   );
 }
 
-export function MyNewsTable({ table }: { table: TypeTable<Announcement> }) {
-
+export function MyNewsTable({ table }: { table: any }) {
   const router = useRouter();
-
   return (
-    <MyTable table={table}>
-      {table.getRowModel().rows.map((row) => (
-        <TableRow
-          key={row.id}
-          className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
-          onClick={() => router.push(`/admin_panel/announcements/${row.original.id}`)}
-        >
-          {row.getVisibleCells().map((cell) => (
-            <TableCell key={cell.id} className="py-3 px-4 text-gray-600 text-sm">
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </TableCell>
-          ))}
-        </TableRow>
-      ))}
-    </MyTable>
+    <table className="min-w-full rounded-lg overflow-hidden text-sm">
+      <thead className="bg-gray-100">
+        {table.getHeaderGroups().map((headerGroup: { id: Key | null | undefined; headers: any[]; }) => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map((header: { id: Key | null | undefined; isPlaceholder: any; column: { columnDef: { header: string | number | bigint | boolean | ComponentType<any> | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }; }; getContext: () => any; }) => (
+              <th
+                key={header.id}
+                className="px-4 py-2 text-left align-middle whitespace-normal min-h-[56px] leading-snug"
+              >
+                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody>
+        {table.getRowModel().rows.map((row: {
+          original: any; id: Key | null | undefined; getVisibleCells: () => any[];
+        }, rowIndex: number) => (
+          <tr
+            key={row.id}
+            className={`${rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100 border`}
+            onClick={() => router.push(`/admin_panel/announcements/${row.original.id}`)}
+          >
+            {row.getVisibleCells().map((cell: { id: Key | null | undefined; column: { columnDef: { cell: string | number | bigint | boolean | ComponentType<any> | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }; }; getContext: () => any; }) => (
+              <td
+                key={cell.id}
+                className="px-4 py-2 align-middle whitespace-normal min-h-[56px] leading-snug"
+              >
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 
@@ -74,7 +93,6 @@ export function MyAdminTable({ table }: { table: TypeTable<Admin> }) {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function MyTable({ table, children }: { table: TypeTable<any>, children?: ReactNode }) {
   return (
     <div className="overflow-x-auto overflow-y-auto rounded-lg border shadow-sm">

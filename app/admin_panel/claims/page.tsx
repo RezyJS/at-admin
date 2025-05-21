@@ -4,7 +4,7 @@ import AdminLayout from "@/components/layouts/AdminLayout/AdminLayout";
 import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import Status, { ClaimStatus } from "@/components/Status/Status";
 import getShortText from "@/helpers/getShortText";
-import { ChevronsLeft, ChevronsRight, Loader2 } from "lucide-react";
+import { ChevronsLeft, ChevronsRight, Loader2, PenBox } from "lucide-react";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
@@ -75,10 +75,20 @@ const columns: ColumnDef<Claim>[] = [
       const date = new Date(datetime);
       return <div>{format(date, 'dd.MM.yyyy HH:mm')}</div>;
     }
+  },
+  {
+    accessorKey: "edit",
+    header: "",
+    cell: ({ row }) => {
+      const id = row.getValue("id");
+      return (
+        <PenBox className="w-auto h-auto text-black hover:bg-gray-300 p-2 rounded-md" onClick={(e) => { e.stopPropagation(); location.assign(`claims/${id}?id=108`) }} />
+      );
+    }
   }
 ];
 
-const page_size = 15;
+const page_size = 10;
 
 export default function ClaimsPage() {
 

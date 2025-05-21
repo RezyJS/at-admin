@@ -3,11 +3,24 @@
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import useSWR from "swr";
+import { Loader2 } from "lucide-react";
 
 const baseURL = process.env.NEXT_PUBLIC_URL;
+const fetcher = (url: string) => axios.post(url).then(res => res.data);
 
 export default function AdminLayout({ children, className }: { children?: ReactNode, className?: string }) {
+  const { data, isLoading } = useSWR('/api/dataFetching/checkAdmin', fetcher)
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (data.privileges.is_super_admin) {
+        setIsSuperAdmin(true);
+      }
+    }
+  }, [data, isLoading])
 
   const router = useRouter();
 
@@ -17,7 +30,7 @@ export default function AdminLayout({ children, className }: { children?: ReactN
 
   const handleSignOut = () => {
     axios.post('/api/signout');
-    router.replace(`${baseURL}/auth`)
+    router.push(`${baseURL}/auth`)
   }
 
   return (
@@ -27,7 +40,13 @@ export default function AdminLayout({ children, className }: { children?: ReactN
           <div className="flex gap-3">
             <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('claims')}>Заявки</Button>
             <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('announcements')}>Объявления</Button>
-            <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('administrators')}>Администраторы</Button>
+            {
+              isLoading ?
+                <Loader2 className="text-white w-auto h-auto animate-spin" /> :
+                isSuperAdmin ?
+                  <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('administrators')}>Администраторы</Button> :
+                  <></>
+            }
           </div>
           <Button variant={'destructive'} className="rounded-sm" onClick={handleSignOut}>Выйти</Button>
         </div>

@@ -1,14 +1,19 @@
 /* app/news/NewsPage.module.css */
-.newsContainer {
-  min-width: max-content;
-  width: 75vw;
-  margin: 0 auto;
-  padding: 20px;
+.truncate-overflow {
+  position: relative;
+  max-height: 4.5em; /* 3 строки */
 }
 
-.loadMoreButton {
-  display: block;
-  margin: 20px auto;
-  padding: 10px 20px;
-  cursor: pointer;
+.truncate-overflow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30%;
+  height: 1.2em;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 50%
+  );
 }
