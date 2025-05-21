@@ -11,9 +11,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowUp, Loader2, X } from 'lucide-react';
 import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import { format } from 'date-fns';
-import { Select, SelectGroup, SelectValue, SelectContent, SelectItem, SelectLabel, SelectTrigger } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
+import ChangeClaimSelect from '@/components/Claims/ChangeClaimInfo/Select/ChangeClaimSelect';
+import ChangeClaimTextArea from '@/components/Claims/ChangeClaimInfo/TextArea/TextArea';
 
 const ClaimData = ({ data }: { data: any }) => (
   <div className='px-[20px] min-w-[320px] text-left text-pretty w-[75vw] mx-auto'>
@@ -34,65 +33,20 @@ const ClaimSkeleton = () => (
 );
 
 const ClaimChanger = ({ id, data }: { id: string, data: any }) => {
-  const [feedback, setFeedback] = useState('');
   return (
     <div className='px-[20px] min-w-[320px] text-left text-pretty w-[75vw] mx-auto flex justify-between items-end'>
-      <div className='flex gap-8'>
+      <div className='flex w-full gap-8'>
         <div className='flex flex-col'>
           <p>Ответ:</p>
-          <div className='flex flex-col gap-3'>
-            <Textarea className='w-[360px] min-h-[40px] h-[40px] max-h-[100px]'
-              value={feedback}
-              onChange={(e) => {
-                setFeedback(e.currentTarget.value);
-              }} />
-            <Button
-              onClick={() => {
-                axios.post('/api/dataFetching/updateClaims/updateFeedback', { feedback, id }).then(() => toast('Сообщение отправлено!'));
-              }}
-            >Отправить</Button>
-          </div>
+          <ChangeClaimTextArea id={id} />
         </div>
         <div>
           <p>Статус:</p>
-          <Select
-            defaultValue={data.status}
-            onValueChange={(val) => {
-              axios.post('/api/dataFetching/updateClaims/updateStatus', { status: val, id }).then(() => toast('Статус обновлён!'));
-            }}>
-            <SelectTrigger className='w-[180px]'>
-              <SelectValue placeholder="Статус" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Статусы</SelectLabel>
-                <SelectItem value="pending">
-                  <div className='flex items-center justify-between w-[180px]'>
-                    <p>В обработке</p>
-                    <div className='h-2 w-2 rounded-2xl bg-gray-500'></div>
-                  </div>
-                </SelectItem>
-                <SelectItem value="accepted">
-                  <div className='flex items-center justify-between w-[180px]'>
-                    <p>В работе</p>
-                    <div className='h-2 w-2 rounded-2xl bg-blue-500'></div>
-                  </div>
-                </SelectItem>
-                <SelectItem value="completed">
-                  <div className='flex items-center justify-between w-[180px]'>
-                    <p>Завершена</p>
-                    <div className='h-2 w-2 rounded-2xl bg-green-500'></div>
-                  </div>
-                </SelectItem>
-                <SelectItem value="declined">
-                  <div className='flex items-center justify-between w-[180px]'>
-                    <p>Отклонена</p>
-                    <div className='h-2 w-2 rounded-2xl bg-red-500'></div>
-                  </div>
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <ChangeClaimSelect data={data} id={id} />
+        </div>
+        <div className='flex w-full justify-end items-start'>
+          {/* TODO: Make it work */}
+          <Button variant={'destructive'}>Удалить</Button>
         </div>
       </div>
     </div>
