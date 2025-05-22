@@ -8,7 +8,7 @@ export default function ChangeClaimTextArea({ id }: { id: string }) {
   const [feedback, setFeedback] = useState('');
   return (
     <div className='w-fit flex flex-col gap-3 items-end'>
-      <Textarea className='w-[240px] min-h-[40px] h-[200px] max-h-[200px]'
+      <Textarea className='w-[480px] min-h-[40px] h-[200px] max-h-[400px]'
         value={feedback}
         onChange={(e) => {
           setFeedback(e.currentTarget.value);

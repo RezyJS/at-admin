@@ -44,7 +44,10 @@ export default function AdminLayout({ children, className }: { children?: ReactN
               isLoading ?
                 <Loader2 className="text-white w-auto h-auto animate-spin" /> :
                 isSuperAdmin ?
-                  <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('administrators')}>Администраторы</Button> :
+                  <>
+                    <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('administrators')}>Администраторы</Button>
+                    <Button variant={'secondary'} className="rounded-sm" onClick={() => handleChangePage('categories')}>Категории</Button>
+                  </> :
                   <></>
             }
           </div>
