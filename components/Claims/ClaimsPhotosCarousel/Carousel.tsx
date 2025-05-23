@@ -1,6 +1,5 @@
 import * as React from "react"
 
-import { Card, CardContent } from "@/components/ui/card"
 import {
   Carousel,
   CarouselContent,
@@ -10,7 +9,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel"
 
-export default function CarouselDApiDemo({ url }: { url: string[] }) {
+export default function ClaimPhotosCarousel({ url }: { url: string[] }) {
   const [api, setApi] = React.useState<CarouselApi>()
   const [current, setCurrent] = React.useState(0)
   const [count, setCount] = React.useState(0)
@@ -30,23 +29,19 @@ export default function CarouselDApiDemo({ url }: { url: string[] }) {
 
   return (
     <div className="flex flex-col items-center">
-      <Carousel setApi={setApi} className="w-full max-w-sm">
+      <Carousel setApi={setApi} className="max-w-sm">
         <CarouselContent>
           {Array.from({ length: url.length }).map((_, index) => (
             <CarouselItem key={index}>
-              <Card>
-                <CardContent className="flex aspect-square items-center justify-center px-4">
-                  <img src={url[index]} />
-                </CardContent>
-              </Card>
+              <img src={url[index]} key={index} className="aspect-square object-contain" />
             </CarouselItem>
           ))}
         </CarouselContent>
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-      <div className="py-2 text-center text-sm text-muted-foreground">
-        Картинка {current} из {count}
+      <div className="text-center text-sm text-muted-foreground">
+        {current}/{count}
       </div>
     </div>
   )

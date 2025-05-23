@@ -8,16 +8,24 @@ import type { Table as TypeTable } from "@tanstack/react-table";
 import { ComponentType, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react";
 import { useRouter } from "next/navigation";
 import { Claim } from "../Status/Status";
-import { baseURL } from "@/lib/utils";
 
-export function MyClaimsTable({ table }: { table: TypeTable<Claim> }) {
+export function MyClaimsTable({
+  table,
+  onRowClick,
+}: {
+  table: TypeTable<Claim>;
+  onRowClick: (claimId: number) => void;
+}) {
   return (
     <MyTable table={table}>
       {table.getRowModel().rows.map((row) => (
         <TableRow
           key={row.id}
-          className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
-          onClick={() => window.open(`${baseURL}/admin_panel/claims/${row.original.id}?id=${row.original.id}`)}
+          className="even:bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRowClick(row.original.id);
+          }}
         >
           {row.getVisibleCells().map((cell) => (
             <TableCell key={cell.id} className="py-3 px-4 text-gray-600 text-sm">
@@ -93,20 +101,27 @@ export function MyAdminTable({ table }: { table: TypeTable<Admin> }) {
 
 function MyTable({ table, children }: { table: TypeTable<any>, children?: ReactNode }) {
   return (
-    <div className="overflow-x-auto overflow-y-auto rounded-lg border shadow-sm">
-      <Table>
-        <TableHeader className="bg-gray-50">
+    <div className="overflow-x-auto overflow-y-auto rounded-lg border shadow-sm relative h-full">
+      <Table className="border-collapse w-full">
+        <TableHeader className="bg-gray-50 sticky top-0 z-[5]">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} className="[&>th]:sticky [&>th]:top-0 [&>th]:z-[6]">
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="py-3 px-4 font-semibold text-gray-700 text-left">
+                <TableHead
+                  key={header.id}
+                  className="py-3 px-4 font-semibold text-gray-700 text-left bg-gray-50 shadow-sm border-b border-gray-200"
+                  style={{
+                    position: 'sticky',
+                    top: 0
+                  }}
+                >
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </TableHead>
               ))}
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody>
+        <TableBody className="[&>tr]:relative [&>tr]:z-0">
           {children}
         </TableBody>
       </Table>

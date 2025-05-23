@@ -9,7 +9,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="">
-        <main className="w-[100vw] h-[100vh] p-0 m-0">{children}</main>
+        <main className="">{children}</main>
         <Toaster />
       </body>
     </html>

@@ -1,47 +1,61 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem } from "@/components/ui/select";
-import axios from "axios";
-import { toast } from "sonner";
+'use client'
 
-export default function ChangeClaimSelect({ data, id }: { data: any, id: string }) {
+import { useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { mutate } from 'swr';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ChangeClaimSelect = ({ data, id }: { data: any; id: string }) => {
+  const [status, setStatus] = useState(data.status);
+
+  const handleStatusChange = async (newStatus: string) => {
+    try {
+      await axios.post(`/api/dataFetching/updateClaims/updateStatus`, { status: newStatus, id });
+      setStatus(newStatus);
+      toast.success('Статус обновлён');
+      mutate(`/api/dataFetching/getClaims/${id}`);
+    } catch (error) {
+      toast.error('Ошибка обновления статуса', { description: `${error}` });
+    }
+  };
+
   return (
-    <Select
-      defaultValue={data.status}
-      onValueChange={(val) => {
-        axios.post('/api/dataFetching/updateClaims/updateStatus', { status: val, id }).then(() => toast('Статус обновлён!'));
-      }}>
-      <SelectTrigger className='w-[180px]'>
-        <SelectValue placeholder="Статус" />
+    <Select value={status} onValueChange={handleStatusChange}>
+      <SelectTrigger className="w-full">
+        <div className="flex items-center gap-2">
+          <SelectValue placeholder="Статус" />
+        </div>
       </SelectTrigger>
       <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Статусы</SelectLabel>
-          <SelectItem value="pending">
-            <div className='flex items-center justify-between w-[180px]'>
-              <p>В обработке</p>
-              <div className='h-2 w-2 rounded-2xl bg-gray-500'></div>
-            </div>
-          </SelectItem>
-          <SelectItem value="accepted">
-            <div className='flex items-center justify-between w-[180px]'>
-              <p>В работе</p>
-              <div className='h-2 w-2 rounded-2xl bg-blue-500'></div>
-            </div>
-          </SelectItem>
-          <SelectItem value="completed">
-            <div className='flex items-center justify-between w-[180px]'>
-              <p>Завершена</p>
-              <div className='h-2 w-2 rounded-2xl bg-green-500'></div>
-            </div>
-          </SelectItem>
-          <SelectItem value="declined">
-            <div className='flex items-center justify-between w-[180px]'>
-              <p>Отклонена</p>
-              <div className='h-2 w-2 rounded-2xl bg-red-500'></div>
-            </div>
-          </SelectItem>
-        </SelectGroup>
+        <SelectItem value="pending">
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-3 rounded-full bg-gray-500" />
+            В обработке
+          </div>
+        </SelectItem>
+        <SelectItem value="accepted">
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-3 rounded-full bg-blue-500" />
+            В работе
+          </div>
+        </SelectItem>
+        <SelectItem value="completed">
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-3 rounded-full bg-green-500" />
+            Завершена
+          </div>
+        </SelectItem>
+        <SelectItem value="declined">
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-3 rounded-full bg-red-500" />
+            Отклонена
+          </div>
+        </SelectItem>
       </SelectContent>
     </Select>
   );
-}
+};
+
+export default ChangeClaimSelect;

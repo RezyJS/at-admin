@@ -16,7 +16,7 @@ export default function AdminLayout({ children, className }: { children?: ReactN
 
   useEffect(() => {
     if (!isLoading) {
-      if (data.privileges.is_super_admin) {
+      if (data?.privileges.is_super_admin) {
         setIsSuperAdmin(true);
       }
     }

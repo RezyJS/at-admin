@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ColumnDef, getCoreRowModel, getFilteredRowModel, useReactTable } from "@tanstack/react-table";
 import axios from "axios";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import useSWR from 'swr'
@@ -32,50 +32,63 @@ const columns: ColumnDef<Admin>[] = [
     accessorKey: 'email',
     header: 'Почта',
     cell: ({ row }) => {
-      return <p>{row.getValue('email')}</p>
+      return <p className="font-medium text-gray-700">{row.getValue('email')}</p>
     }
   },
   {
     accessorKey: 'is_super_admin',
-    header: () => <p className="text-center">Супер-Админ</p>,
+    header: () => <p className="text-center">Статус</p>,
     cell: ({ row }) => {
       const is_super_admin = row.getValue('is_super_admin');
-      return <p className="text-center">{is_super_admin ? 'Да' : 'Нет'}</p>
+      return (
+        <div className="flex justify-center">
+          <span className={`px-3 py-1 rounded-full text-sm ${is_super_admin ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+            {is_super_admin ? 'Супер-Админ' : 'Администратор'}
+          </span>
+        </div>
+      )
     }
   },
   {
     accessorKey: 'delete_button',
     header: '',
     cell: ({ row }) => {
-      const email = row.getValue('email');
+      const email = row.getValue('email') as string;
       return (
         <div className="flex justify-center">
           <Dialog>
-            <DialogTrigger>
-              <div className="text-white font-semibold text-md bg-red-600 hover:bg-red-800 rounded-md p-2">
+            <DialogTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50">
+                <Trash2 className="h-4 w-4 mr-2" />
                 Удалить
-              </div>
+              </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Вы уверены?</DialogTitle>
-                <DialogDescription asChild>
-                  <div className="flex flex-col">
-                    Вы действительно хотите забрать права администратора у данного пользователя?
-                    <div className="flex justify-end gap-5">
-                      <Button className="bg-green-500 hover:bg-green-800"
-                        onClick={() => {
-                          axios.delete('/api/admins', { data: { email } }).then(() => location.reload()).catch(() => toast('Произошла ошибка', {
-                            description: `Проверьте адрес почты или попробуйте позже.`
-                          }));
-                        }}
-                      >Да</Button>
-                      <DialogClose asChild>
-                        <Button className="bg-red-600 hover:bg-red-800">Нет</Button>
-                      </DialogClose>
-                    </div>
+                <DialogTitle className="text-lg">Подтверждение удаления</DialogTitle>
+                <DialogDescription className="py-4" asChild>
+                  <div>
+                    Вы собираетесь удалить администратора:
+                    <div className="mt-2 font-medium text-gray-900">{email}</div>
                   </div>
                 </DialogDescription>
+                <div className="flex justify-end gap-3 mt-4">
+                  <DialogClose asChild>
+                    <Button variant="outline">Отмена</Button>
+                  </DialogClose>
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      axios.delete('/api/admins', { data: { email } })
+                        .then(() => location.reload())
+                        .catch(() => toast.error('Ошибка удаления', {
+                          description: 'Проверьте адрес почты или попробуйте позже.'
+                        }));
+                    }}
+                  >
+                    Подтвердить
+                  </Button>
+                </div>
               </DialogHeader>
             </DialogContent>
           </Dialog>
@@ -86,7 +99,6 @@ const columns: ColumnDef<Admin>[] = [
 ]
 
 export default function AdministratorsPage() {
-
   const { data, isLoading, error } = useSWR('/api/admins', fetcher);
   const [email, setEmail] = useState('');
 
@@ -100,8 +112,8 @@ export default function AdministratorsPage() {
   if (error) {
     return (
       <AdminLayout>
-        <div className="flex h-full w-full justify-center items-center">
-          Видимо, какие-то неполадки...
+        <div className="flex h-full w-full justify-center items-center text-red-600">
+          Ошибка загрузки данных
         </div>
       </AdminLayout>
     );
@@ -111,51 +123,58 @@ export default function AdministratorsPage() {
     return (
       <AdminLayout>
         <div className="flex h-full w-full justify-center items-center">
-          <Loader2 className="animate-spin h-12 w-12" />
+          <Loader2 className="animate-spin h-12 w-12 text-blue-600" />
         </div>
-      </AdminLayout >
+      </AdminLayout>
     );
   }
 
   return (
-    <AdminLayout className="flex flex-col p-2 gap-2 w-full h-full">
-      <div className="h-full w-full flex flex-col gap-5">
-        <div className="flex flex-col justify-start gap-5 lg:flex-row items-baseline lg:justify-between">
-          <p className="text-3xl font-bold">Список Администраторов:</p>
-          <div className="flex flex-col gap-2">
-            <Dialog>
-              <DialogTrigger>
-                <div className="text-white font-semibold text-md bg-green-400 hover:bg-green-600 rounded-md p-2">
-                  Добавить администратора
+    <AdminLayout>
+      <div className="max-w-6xl mx-auto space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h1 className="text-2xl font-bold text-gray-900">Управление администраторами</h1>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="gap-2">
+                <UserPlus className="h-4 w-4" />
+                Добавить администратора
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle className="text-lg">Добавление администратора</DialogTitle>
+                <DialogDescription className="py-4">
+                  <Input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                    placeholder="Введите email адрес"
+                    className="w-full"
+                  />
+                </DialogDescription>
+                <div className="flex justify-end gap-3 mt-4">
+                  <DialogClose asChild>
+                    <Button variant="outline">Отмена</Button>
+                  </DialogClose>
+                  <Button
+                    onClick={() => {
+                      axios.post('/api/admins', { email })
+                        .then(() => location.reload())
+                        .catch(() => toast.error('Ошибка добавления', {
+                          description: 'Проверьте корректность email или попробуйте позже.'
+                        }));
+                    }}
+                  >
+                    Добавить
+                  </Button>
                 </div>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Введите почту</DialogTitle>
-                  <DialogDescription asChild>
-                    <div className="flex flex-col gap-3">
-                      <Input value={email} onChange={(e) => { setEmail(e.currentTarget.value) }} type='email' placeholder="example@mail.ru" />
-                      <div className="flex gap-2 justify-end">
-                        <Button
-                          className="bg-green-500 hover:bg-green-800"
-                          onClick={() => {
-                            axios.post('/api/admins', { email }).then(() => location.reload()).catch(() => toast('Произошла ошибка', {
-                              description: `Проверьте адрес почты или попробуйте позже.`
-                            }))
-                          }}
-                        >Добавить</Button>
-                        <DialogClose asChild>
-                          <Button className="bg-red-600 hover:bg-red-800">Отмена</Button>
-                        </DialogClose>
-                      </div>
-                    </div>
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
-          </div>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
         </div>
-        <div className="overflow-x-auto overflow-y-auto rounded-lg border shadow-sm max-h-[80vh]">
+
+        <div className="rounded-xl border bg-white shadow-sm">
           <MyAdminTable table={table} />
         </div>
       </div>

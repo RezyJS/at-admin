@@ -1,7 +1,10 @@
-import axios from "axios";
+'use client'
+
+import CategoryTree from "./CategoryTree/CategoryTree";
+import CategoryActions from "./CategoryActions";
+import { Card } from "@/components/ui/card";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import CategoryTree from "./CategoryTree";
+import axios from "axios";
 
 interface Category {
   name: string,
@@ -9,88 +12,31 @@ interface Category {
 }
 
 export default function CategoriesConstructor({ _categories }: { _categories: Category[] }) {
-
   const [categories, setCategories] = useState<Category[]>(_categories);
-
-  const handleAddCategory = () => {
-    setCategories((prev) => [
-      ...prev,
-      {
-        name: 'Название',
-        subcategories: ['Подкатегория 1']
-      }
-    ]);
-  }
-
-  const handleAddSubCategory = (id: number) => {
-    setCategories((prev) => {
-      return prev.map((category, index) => {
-        if (index === id) {
-          return {
-            ...category,
-            subcategories: [...category.subcategories, 'Подкатегория']
-          };
-        }
-        return category;
-      });
-    });
-  }
-
-  const handleDeleteSubCategory = (id: number, idx: number) => {
-    setCategories((prev) => {
-      return prev.map((category, categoryIndex) => {
-        if (categoryIndex === id) {
-          const updatedSubcategories = category.subcategories.filter(
-            (_, subcatIndex) => subcatIndex !== idx
-          );
-
-          return {
-            ...category,
-            subcategories: updatedSubcategories
-          };
-        }
-        return category;
-      });
-    });
-  }
-
-  const handleDeleteCategory = (id: number) => {
-    setCategories((prev) => {
-      return prev.filter((_, catId) => {
-        return catId !== id;
-      })
-    });
-  }
 
   const handleSendCategories = () => {
     axios.post('/api/dataFetching/categories/setCategories', { categories });
-  }
+  };
 
   return (
-    <div className="flex w-full h-full justify-between gap-4">
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+    <div className="flex flex-col h-full p-4 gap-4">
+      <div className="flex justify-between items-center px-2">
+        <h1 className="text-2xl font-bold text-slate-800">Редактор категорий</h1>
+        <CategoryActions
+          onSave={handleSendCategories}
+          onAddCategory={() => setCategories([...categories, {
+            name: 'Новая категория',
+            subcategories: []
+          }])}
+        />
+      </div>
+
+      <Card className="flex-1 p-6 bg-muted/50 overflow-auto">
         <CategoryTree
           categories={categories}
           setCategories={setCategories}
-          handleDeleteCategory={handleDeleteCategory}
-          handleAddSubCategory={handleAddSubCategory}
-          handleDeleteSubCategory={handleDeleteSubCategory}
         />
-      </div>
-      <div className="flex flex-col gap-2 justify-start">
-        <Button
-          className="w-full self-center"
-          onClick={handleSendCategories}
-        >
-          Отправить
-        </Button>
-        <Button
-          className="w-full self-center bg-green-500 hover:bg-green-800"
-          onClick={handleAddCategory}
-        >
-          Добавить категорию
-        </Button>
-      </div>
+      </Card>
     </div>
   );
 }

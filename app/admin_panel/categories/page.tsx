@@ -16,8 +16,8 @@ export default function AdministratorsPage() {
   const { data, isLoading } = useSWR('/api/dataFetching/categories/getCategories', fetcher);
 
   useEffect(() => {
-    if (!isLoading) {
-      setCategories(data.categories)
+    if (!isLoading && data) {
+      setCategories(data?.categories)
       switchShow(true)
     }
   }, [isLoading, data])

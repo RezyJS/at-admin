@@ -9,9 +9,6 @@ export async function POST(request: NextRequest) {
   const { categories } = await request.json();
   const body = JSON.stringify({ Categories: categories });
 
-  console.info(categories);
-  console.info(body);
-
   const apiRequest = await fetcher({
     url: `${apiURL}/admin/v1/categories/`,
     method: 'PUT',
@@ -21,7 +18,6 @@ export async function POST(request: NextRequest) {
   });
 
   if (apiRequest.error) {
-    console.info(apiRequest);
     return NextResponse.error();
   }
 
