@@ -17,7 +17,7 @@ const NewsData = ({ data }: { data: any }) => (
     <div className="text-pretty text-2xl font-bold">
       <Markdown>{data.title}</Markdown>
     </div>
-    <p className='text-pretty text-neutral-500 relative after:content-[""] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-neutral-200 pb-2'>Опубликовано: {('' + new Date(data.datetime).toLocaleString("ru-RU", { timeZone: "Europe/Moscow" })).slice(0, 10)}</p>
+    <p className='text-pretty text-neutral-500 relative after:content-[""] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[2px] after:bg-neutral-200 pb-2'>Опубликовано: {('' + new Date(data.created_at).toLocaleString("ru-RU", { timeZone: "Europe/Moscow" })).slice(0, 10)}</p>
     <div className='text-pretty pt-2 text-lg text-left font-medium'>
       <Markdown>{data.description}</Markdown>
     </div>

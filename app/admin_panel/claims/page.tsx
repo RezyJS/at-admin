@@ -23,7 +23,7 @@ type Claim = {
   latitude: number;
   longitude: number;
   feedback: string;
-  datetime: string;
+  created_at: string;
 };
 
 const statusParser = {
@@ -300,12 +300,11 @@ export default function ClaimsPage() {
       },
     },
     {
-      accessorKey: "datetime",
+      accessorKey: "created_at",
       header: "Дата",
       cell: ({ row }) => {
-        const datetime = row.getValue("datetime") as string;
-        const date = new Date(datetime);
-        return <div>{format(date, 'dd.MM.yyyy HH:mm')}</div>;
+        const created_at = new Date(row.getValue("created_at") as string);
+        return <div>{format(created_at, 'dd.MM.yyyy HH:mm')}</div>;
       }
     },
     {

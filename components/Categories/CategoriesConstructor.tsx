@@ -19,7 +19,7 @@ export default function CategoriesConstructor({ _categories }: { _categories: Ca
   };
 
   return (
-    <div className="flex flex-col h-full p-4 gap-4">
+    <div className="flex flex-col w-full h-full p-4 gap-4">
       <div className="flex justify-between items-center px-2">
         <h1 className="text-2xl font-bold text-slate-800">Редактор категорий</h1>
         <CategoryActions

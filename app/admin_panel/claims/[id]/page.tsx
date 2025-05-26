@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/alt-text */
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
@@ -17,70 +19,31 @@ import {
   FileText,
   Image as ImageIcon,
   AlertCircle,
-  CheckCircle,
-  Clock,
-  XCircle
+  XCircle,
+  PenBox
 } from 'lucide-react';
 import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import { format } from 'date-fns';
-import ChangeClaimSelect from '@/components/Claims/ChangeClaimInfo/Select/ChangeClaimSelect';
-import ClaimPhotosCarousel from '@/components/Claims/ClaimsPhotosCarousel/Carousel';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import StatusBadge from '@/components/Claims/ChangeClaimInfo/StatusBadge/StatusBadge';
 
-const StatusBadge = ({ status }: { status: string }) => {
-  const getStatusConfig = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return {
-          icon: <Clock className="w-4 h-4" />,
-          label: 'В обработке',
-          variant: 'secondary' as const,
-          className: 'bg-gray-200 text-gray-800 border-gray-200'
-        };
-      case 'accepted':
-        return {
-          icon: <CheckCircle className="w-4 h-4" />,
-          label: 'В работе',
-          variant: 'default' as const,
-          className: 'bg-blue-100 text-blue-800 border-blue-200'
-        };
-      case 'completed':
-        return {
-          icon: <CheckCircle className="w-4 h-4" />,
-          label: 'Завершена',
-          variant: 'default' as const,
-          className: 'bg-green-100 text-green-800 border-green-200'
-        };
-      case 'declined':
-        return {
-          icon: <XCircle className="w-4 h-4" />,
-          label: 'Отклонена',
-          variant: 'destructive' as const,
-          className: 'bg-red-100 text-red-800 border-red-200'
-        };
-      default:
-        return {
-          icon: <AlertCircle className="w-4 h-4" />,
-          label: status,
-          variant: 'outline' as const,
-          className: 'bg-gray-100 text-gray-800 border-gray-200'
-        };
-    }
+const ClaimData = ({ data, mutate }: { data: any, mutate: () => void }) => {
+
+  const [isFeedback, setIsFeedback] = useState(false);
+
+  const router = useRouter();
+
+  const handleDeleteClaim = () => {
+    axios.delete(`/api/dataFetching/updateClaims/deleteClaim/${data.id}`)
+      .then(() => {
+        toast.success('Заявка удалена', { description: 'Заявка была успешно удалена' });
+        router.push('/admin_panel/claims');
+      })
+      .catch(() => toast.error('Ошибка!', { description: 'Не удалось удалить заявку. Попробуйте позже.' }));
   };
 
-  const config = getStatusConfig(status);
-
-  return (
-    <Badge variant={config.variant} className={`${config.className} flex items-center gap-2 px-3 py-1 text-sm font-medium`}>
-      {config.icon}
-      {config.label}
-    </Badge>
-  );
-};
-
-const ClaimData = ({ data }: { data: any }) => {
   return (
     <div className="space-y-6">
       <Card className="border-0 shadow-sm">
@@ -90,18 +53,24 @@ const ClaimData = ({ data }: { data: any }) => {
               <CardTitle className="text-2xl font-bold text-gray-900 mb-2 leading-tight">
                 {data.title || 'Без названия'}
               </CardTitle>
-              <div className="flex items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  <span>Создано: {format(new Date(data.datetime), 'dd.MM.yyyy в HH:mm')}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <User className="w-4 h-4" />
-                  <span>ID пользователя: {data.uid}</span>
+              <div className="flex items-start gap-4 text-sm text-gray-600">
+                <div className='flex flex-col gap-2'>
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    <span>Создано: {format(new Date(data.created_at), 'dd.MM.yyyy в HH:mm')}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    <span>Обновлено: {format(new Date(data.updated_at), 'dd.MM.yyyy в HH:mm')}</span>
+                  </div>
+                  <div className="flex gap-1">
+                    <User className="w-4 h-4" />
+                    <span>Email пользователя: {data.email}</span>
+                  </div>
                 </div>
               </div>
             </div>
-            <StatusBadge status={data.status} />
+            <StatusBadge status={data.status} id={data.id} />
           </div>
         </CardHeader>
         <CardContent>
@@ -116,20 +85,6 @@ const ClaimData = ({ data }: { data: any }) => {
           </div>
         </CardContent>
       </Card>
-
-      {data.feedback && (
-        <Card className="border-0 shadow-sm bg-blue-50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-semibold flex items-center gap-2 text-blue-800">
-              <AlertCircle className="w-5 h-5" />
-              Обратная связь
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-blue-700 whitespace-pre-wrap">{data.feedback}</p>
-          </CardContent>
-        </Card>
-      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="border-0 shadow-sm">
@@ -161,7 +116,7 @@ const ClaimData = ({ data }: { data: any }) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Badge variant="outline" className="text-sm">
+            <Badge variant="outline" className="text-md px-4 py-2 font-bold rounded-md">
               {data.category || 'Не указана'}
             </Badge>
           </CardContent>
@@ -177,12 +132,66 @@ const ClaimData = ({ data }: { data: any }) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div>
-              <ClaimPhotosCarousel url={data.photos} />
+            <div className='grid grid-flow-col'>
+              {
+                data.photos.map((url: string, id: number) => {
+                  return <img src={url} key={id} className="aspect-square object-contain" />
+                })
+              }
             </div>
           </CardContent>
         </Card>
       )}
+
+      <Card className="border-0 shadow-sm bg-blue-50">
+        <CardHeader className="pb-3 flex justify-between">
+          <CardTitle className="text-lg font-semibold flex items-center gap-2 text-blue-800">
+            <AlertCircle className="w-5 h-5" />
+            Обратная связь
+          </CardTitle>
+          {
+            isFeedback ?
+              <Button
+                variant={'outline'}
+                className='bg-transparent border-2 border-red-700 text-red-700 hover:bg-red-700 hover:text-red-50'
+                onClick={() => {
+                  setIsFeedback(false);
+                }}
+              >
+                <X className='w-6 h-6' />
+                Отмена
+              </Button> :
+              <Button
+                variant={'outline'}
+                className='bg-transparent border-2 border-blue-700 text-blue-700 hover:bg-blue-700 hover:text-blue-50'
+                onClick={() => {
+                  setIsFeedback(true);
+                }}
+              >
+                <PenBox className='w-6 h-6' />
+                Редактировать
+              </Button>
+          }
+        </CardHeader>
+        <CardContent>
+          {
+            isFeedback ?
+              <ChangeClaimTextArea id={data.id} mutate={mutate} text={data.feedback} setIsFeedback={setIsFeedback} /> :
+              <p className="text-blue-700 whitespace-pre-wrap">{data.feedback || <span className='flex pb-3 justify-center items-center w-full h-full font-semibold text-2xl text-gray-400'>пусто</span>}</p>
+          }
+        </CardContent>
+      </Card>
+
+      <div className="pt-4 flex w-full justify-center">
+        <Button
+          variant="destructive"
+          className="w-max"
+          onClick={handleDeleteClaim}
+        >
+          <XCircle className="w-4 h-4 mr-2" />
+          Удалить заявку
+        </Button>
+      </div>
     </div>
   );
 };
@@ -236,52 +245,18 @@ const ClaimSkeleton = () => (
   </div>
 );
 
-const ClaimChanger = ({ id, data, handleDeleteClaim, mutate }: {
-  id: string,
-  data: any,
-  handleDeleteClaim: () => void,
-  mutate: () => void
-}) => {
-  return (
-    <Card className="border-0 shadow-sm h-fit sticky top-6 max-w-[320px]">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold">Управление заявкой</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Статус заявки</label>
-          <ChangeClaimSelect data={data} id={id} />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium text-gray-700 mb-2 block">Ответ администратора</label>
-          <ChangeClaimTextArea id={id} mutate={mutate} />
-        </div>
-
-        <div className="pt-4 border-t">
-          <Button
-            variant="destructive"
-            className="w-full"
-            onClick={handleDeleteClaim}
-          >
-            <XCircle className="w-4 h-4 mr-2" />
-            Удалить заявку
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
-
-const ChangeClaimTextArea = ({ id, mutate }: { id: string; mutate: () => void }) => {
-  const [feedback, setFeedback] = useState('');
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+const ChangeClaimTextArea = ({ id, mutate, text, setIsFeedback }: { id: string; mutate: () => void, text: string, setIsFeedback: Function }) => {
+  const [feedback, setFeedback] = useState(text);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
+      if (!text) setFeedback('');
       await axios.post(`/api/dataFetching/updateClaims/updateFeedback`, { feedback, id });
       toast.success('Успешно сохранено');
+      setIsFeedback(false);
       mutate(); // Вызываем мутацию для обновления данных
     } catch (error) {
       toast.error('Ошибка сохранения', { description: `${error}` });
@@ -291,15 +266,15 @@ const ChangeClaimTextArea = ({ id, mutate }: { id: string; mutate: () => void })
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full flex flex-col">
       <textarea
         value={feedback}
         onChange={(e) => setFeedback(e.target.value)}
-        className="w-full h-32 p-3 border rounded-lg break-words whitespace-pre-wrap"
+        className="w-full h-32 p-3 text-blue-800 border-2 border-blue-500 rounded-md break-words whitespace-pre-wrap"
         placeholder="Введите ответ администратора..."
       />
       <Button
-        className='w-full'
+        className='w-max self-center bg-blue-500 hover:bg-blue-800'
         onClick={handleSubmit}
         disabled={isSubmitting}
       >
@@ -312,10 +287,7 @@ const ChangeClaimTextArea = ({ id, mutate }: { id: string; mutate: () => void })
 const Wrapper = ({
   router,
   children,
-  params,
-  isLoading,
-  data,
-  mutate
+  params
 }: {
   router: AppRouterInstance,
   children: React.ReactNode,
@@ -325,16 +297,6 @@ const Wrapper = ({
   mutate: () => void
 }) => {
   const { id } = React.use(params);
-
-  const handleDeleteClaim = () => {
-    axios.delete(`/api/dataFetching/updateClaims/deleteClaim/${id}`)
-      .then(() => {
-        toast.success('Заявка удалена', { description: 'Заявка была успешно удалена' });
-        router.push('/admin_panel/claims');
-      })
-      .catch(() => toast.error('Ошибка!', { description: 'Не удалось удалить заявку. Попробуйте позже.' }));
-  };
-
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -357,34 +319,6 @@ const Wrapper = ({
       <div className="flex gap-8 p-6 max-w-[1800px] mx-auto">
         <div className="flex-1 min-w-0">
           {children}
-        </div>
-
-        <div className="w-80 flex-shrink-0 min-w-[300px]">
-          {isLoading ? (
-            <Card className="border-0 shadow-sm">
-              <CardHeader>
-                <Skeleton className="h-6 w-32" />
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <Skeleton className="h-4 w-20 mb-2" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-                <div>
-                  <Skeleton className="h-4 w-24 mb-2" />
-                  <Skeleton className="h-24 w-full" />
-                </div>
-                <Skeleton className="h-10 w-full" />
-              </CardContent>
-            </Card>
-          ) : (
-            <ClaimChanger
-              id={id}
-              data={data}
-              handleDeleteClaim={handleDeleteClaim}
-              mutate={mutate}
-            />
-          )}
         </div>
       </div>
     </div>
@@ -451,7 +385,7 @@ const Claims = ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     <AdminLayout>
       <Wrapper isLoading={isLoading} data={data} params={params} router={router} mutate={mutate}>
-        <ClaimData data={data} />
+        <ClaimData data={data} mutate={mutate} />
         {showScrollButton && (
           <Button
             variant="default"

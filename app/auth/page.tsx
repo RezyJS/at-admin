@@ -9,7 +9,7 @@ export default function AuthPage() {
   const [email, setEmail] = useState<string | null>(null);
 
   return (
-    <div className="bg-white w-full h-full flex flex-col justify-center items-center">
+    <div className="bg-white w-[100vw] h-[100vh] flex flex-col justify-center items-center">
       <p className="pb-2 text-black font-bold text-5xl">Тверь в порядке</p>
       <p className="pb-8 text-black font-bold text-3xl">Администрирование</p>
       {

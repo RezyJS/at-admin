@@ -15,7 +15,7 @@ export type Announcement = {
   id: number;
   title: string;
   description: string;
-  datetime: string;
+  created_at: string;
 };
 
 const columns: ColumnDef<Announcement>[] = [
@@ -56,11 +56,11 @@ const columns: ColumnDef<Announcement>[] = [
     size: 300, // Относительная ширина
   },
   {
-    accessorKey: 'datetime',
+    accessorKey: 'created_at',
     header: 'Дата',
     cell: ({ row }) => {
-      const datetime = row.getValue('datetime') as string;
-      const date = new Date(datetime);
+      const created_at = row.getValue('created_at') as string;
+      const date = new Date(created_at);
       return <div className="w-40 whitespace-nowrap">{format(date, 'dd.MM.yyyy HH:mm')}</div>;
     },
     size: 150, // Фиксированная ширина

@@ -20,7 +20,7 @@ export interface Claim {
   latitude: number;
   longitude: number;
   feedback: string;
-  datetime: string;
+  created_at: string;
 };
 
 // Компонент Status
