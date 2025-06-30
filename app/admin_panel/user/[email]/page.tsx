@@ -72,9 +72,15 @@ const claimsFetcher = (
   page_size: number
 ) => axios.post(url, { id, cursor, page_size }).then((res) => res.data);
 
-// Новая функция для проверки блокировки пользователя
+// // Новая функция для проверки блокировки пользователя
+// const checkUserBlockedStatus = (uid: string) =>
+//   axios.post('/api/admin/isUserBlocked', { uid }).then((res) => res.data);
 const checkUserBlockedStatus = (uid: string) =>
-  axios.post('/api/admin/isUserBlocked', { uid }).then((res) => res.data);
+  new Promise((resolve) =>
+    resolve({
+      isBlocked: true,
+    })
+  );
 
 export default function UserPage() {
   const router = useRouter();
@@ -237,15 +243,6 @@ export default function UserPage() {
     }
   }, [allClaims.length, isHydrated, email]);
 
-  const handleScroll = useCallback(() => {
-    if (scrollContainerRef.current && isHydrated && email) {
-      saveToSessionStorage(
-        SCROLL_POSITION_KEY(email),
-        scrollContainerRef.current.scrollTop.toString()
-      );
-    }
-  }, [isHydrated, email]);
-
   const handleRowClick = useCallback(
     (claimId: number) => {
       if (!email) return;
@@ -385,7 +382,7 @@ export default function UserPage() {
     isUserBlocked === null
   ) {
     return (
-      <AdminLayout className='flex items-center justify-center h-full'>
+      <AdminLayout>
         <Loader2 className='h-12 w-12 animate-spin text-gray-400' />
       </AdminLayout>
     );
