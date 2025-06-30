@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'use client'
+'use client';
 
-import CategoryNode from "./CategoryNode";
+import CategoryNode from './CategoryNode';
 
 interface Category {
-  name: string,
-  subcategories: Array<string>
+  name: string;
+  subcategories: Array<string>;
 }
 
 export default function CategoryTree({
   categories,
-  setCategories
+  setCategories,
 }: {
-  categories: Category[]
-  setCategories: (categories: Category[]) => void
+  categories: Category[];
+  setCategories: (categories: Category[]) => void;
 }) {
   const handleCategoryEdit = (index: number, name: string) => {
     const newCategories = [...categories];
@@ -21,7 +21,11 @@ export default function CategoryTree({
     setCategories(newCategories);
   };
 
-  const handleSubCategoryEdit = (categoryIndex: number, subIndex: number, value: string) => {
+  const handleSubCategoryEdit = (
+    categoryIndex: number,
+    subIndex: number,
+    value: string
+  ) => {
     const newCategories = [...categories];
     newCategories[categoryIndex].subcategories[subIndex] = value;
     setCategories(newCategories);
@@ -35,8 +39,9 @@ export default function CategoryTree({
 
   const handleSubCategoryDelete = (categoryIndex: number, subIndex: number) => {
     const newCategories = [...categories];
-    newCategories[categoryIndex].subcategories =
-      newCategories[categoryIndex].subcategories.filter((_: any, i: number) => i !== subIndex);
+    newCategories[categoryIndex].subcategories = newCategories[
+      categoryIndex
+    ].subcategories.filter((_: any, i: number) => i !== subIndex);
     setCategories(newCategories);
   };
 
@@ -45,7 +50,7 @@ export default function CategoryTree({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 w-full">
+    <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 w-full'>
       {categories.map((category, index) => (
         <CategoryNode
           key={index}
@@ -54,9 +59,11 @@ export default function CategoryTree({
           onDelete={() => handleCategoryDelete(index)}
           onAddSubCategory={() => handleAddSubCategory(index)}
           onSubCategoryEdit={(subIndex, value) =>
-            handleSubCategoryEdit(index, subIndex, value)}
+            handleSubCategoryEdit(index, subIndex, value)
+          }
           onSubCategoryDelete={(subIndex) =>
-            handleSubCategoryDelete(index, subIndex)}
+            handleSubCategoryDelete(index, subIndex)
+          }
         />
       ))}
     </div>

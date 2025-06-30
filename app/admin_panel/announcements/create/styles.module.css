@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+  height: 100vh; /* Занимает всю высоту экрана */
+}
+
+.panel {
+  flex: 1; /* Равная ширина для обеих панелей */
+  height: 100%;
+  overflow-y: auto; /* Включаем вертикальную прокрутку */
+  padding: 20px;
+}
+
+.editorPanel {
+  background-color: #f7f7f7;
+  border-right: 1px solid #ddd;
+}
+
+.editor {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  background-color: transparent;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.previewPanel {
+  background-color: #ffffff;
+  line-height: 1.6;
+  word-wrap: break-word;
+}

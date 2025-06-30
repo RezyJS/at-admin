@@ -1,16 +1,20 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
+  content: ['./**/*.{js,ts,jsx,tsx}'],
+  purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      keyframes: {
-        "caret-blink": {
-          "0%,70%,100%": { opacity: "1" },
-          "20%,50%": { opacity: "0" },
+      typography: {
+        DEFAULT: {
+          css: {
+            pre: {
+              backgroundColor: '',
+              padding: 0,
+            },
+          },
         },
-      },
-      animation: {
-        "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
     },
   },
+  // eslint-disable-next-line no-undef
+  plugins: [require('@tailwindcss/typography')],
 }
