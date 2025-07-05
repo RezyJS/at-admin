@@ -141,7 +141,6 @@ export default function HomePage() {
               className='flex-1'
               style={{ resize: 'none' }}
               onChange={(e) => {
-                console.info(e.target.value);
                 setDescription(e.target.value);
               }}
             />

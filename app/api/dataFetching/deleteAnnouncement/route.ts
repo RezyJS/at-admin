@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
   const { uid } = await request.json();
 
   if (!uid) {
-    console.info('huy');
     return NextResponse.error();
   }
 

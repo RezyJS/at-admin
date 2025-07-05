@@ -1,16 +1,20 @@
-"use client";
+'use client';
 
-import AdminLayout from "@/components/layouts/AdminLayout/AdminLayout";
-import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import Status, { ClaimStatus } from "@/components/Status/Status";
-import getShortText from "@/helpers/getShortText";
-import { Loader2, PenBox } from "lucide-react";
-import { format } from "date-fns";
-import { useEffect, useState, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import useSWR from "swr";
-import { MyClaimsTable } from "@/components/Table/Table";
-import axios from "axios";
+import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import Status, { ClaimStatus } from '@/components/Status/Status';
+import getShortText from '@/helpers/getShortText';
+import { Loader2, PenBox } from 'lucide-react';
+import { format } from 'date-fns';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import useSWR from 'swr';
+import { MyClaimsTable } from '@/components/Table/Table';
+import axios from 'axios';
 
 type Claim = {
   id: number;
@@ -27,11 +31,11 @@ type Claim = {
 };
 
 const statusParser = {
-  "pending": ClaimStatus.PENDING,
-  "accepted": ClaimStatus.ACCEPTED,
-  "completed": ClaimStatus.COMPLETED,
-  "declined": ClaimStatus.DECLINED,
-}
+  pending: ClaimStatus.PENDING,
+  accepted: ClaimStatus.ACCEPTED,
+  completed: ClaimStatus.COMPLETED,
+  declined: ClaimStatus.DECLINED,
+};
 
 // Ключи для сохранения состояния в sessionStorage
 const SCROLL_POSITION_KEY = 'claims-scroll-position';
@@ -49,9 +53,7 @@ const saveToSessionStorage = (key: string, data: any) => {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem(key, JSON.stringify(data));
     }
-  } catch (error) {
-    console.warn('Failed to save to sessionStorage:', error);
-  }
+  } catch {}
 };
 
 const loadFromSessionStorage = (key: string) => {
@@ -61,8 +63,7 @@ const loadFromSessionStorage = (key: string) => {
       return item ? JSON.parse(item) : null;
     }
     return null;
-  } catch (error) {
-    console.warn('Failed to load from sessionStorage:', error);
+  } catch {
     return null;
   }
 };
@@ -109,11 +110,16 @@ export default function ClaimsPage() {
 
   // Определяем, нужно ли загружать данные
   // Теперь мы учитываем состояние гидрации
-  const shouldFetch = hasMore && isHydrated && (allClaims.length === 0 || !isInitialLoad);
+  const shouldFetch =
+    hasMore && isHydrated && (allClaims.length === 0 || !isInitialLoad);
 
   const { data, isLoading, error } = useSWR(
-    shouldFetch ? `/api/dataFetching/getClaims?page_size=${page_size}&${cursor !== '-1' ? `cursor=${cursor}` : ''}` : null,
-    (url: string) => axios.get(url).then(res => res.data),
+    shouldFetch
+      ? `/api/dataFetching/getClaims?page_size=${page_size}&${
+          cursor !== '-1' ? `cursor=${cursor}` : ''
+        }`
+      : null,
+    (url: string) => axios.get(url).then((res) => res.data),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
@@ -125,9 +131,11 @@ export default function ClaimsPage() {
   // Эффект для обработки загруженных данных
   useEffect(() => {
     if (data && data.length > 0) {
-      setAllClaims(prev => {
-        const existingIds = new Set(prev.map(claim => claim.id));
-        const newClaims = data.filter((claim: Claim) => !existingIds.has(claim.id));
+      setAllClaims((prev) => {
+        const existingIds = new Set(prev.map((claim) => claim.id));
+        const newClaims = data.filter(
+          (claim: Claim) => !existingIds.has(claim.id)
+        );
         const updatedClaims = [...prev, ...newClaims];
 
         // Сохраняем обновленные данные в sessionStorage только после гидрации
@@ -182,25 +190,28 @@ export default function ClaimsPage() {
     setCursor(lastClaim?.id.toString() || '-1');
   }, [hasMore, isLoadingMore, allClaims, isHydrated]);
 
-  const observerRef = useCallback((node: HTMLDivElement) => {
-    if (isLoadingMore || !hasMore || !isHydrated) return;
+  const observerRef = useCallback(
+    (node: HTMLDivElement) => {
+      if (isLoadingMore || !hasMore || !isHydrated) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && hasMore && !isLoadingMore) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1 }
-    );
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting && hasMore && !isLoadingMore) {
+            loadMore();
+          }
+        },
+        { threshold: 0.1 }
+      );
 
-    if (node) observer.observe(node);
+      if (node) observer.observe(node);
 
-    return () => {
-      if (node) observer.unobserve(node);
-      observer.disconnect();
-    };
-  }, [hasMore, isLoadingMore, loadMore, isHydrated]);
+      return () => {
+        if (node) observer.unobserve(node);
+        observer.disconnect();
+      };
+    },
+    [hasMore, isLoadingMore, loadMore, isHydrated]
+  );
 
   // Восстановление позиции скролла (только после гидрации)
   useEffect(() => {
@@ -227,18 +238,24 @@ export default function ClaimsPage() {
 
   const handleScroll = useCallback(() => {
     if (scrollContainerRef.current && isHydrated) {
-      saveToSessionStorage(SCROLL_POSITION_KEY, scrollContainerRef.current.scrollTop.toString());
+      saveToSessionStorage(
+        SCROLL_POSITION_KEY,
+        scrollContainerRef.current.scrollTop.toString()
+      );
     }
   }, [isHydrated]);
 
-  const handleRowClick = useCallback((claimId: number) => {
-    saveToSessionStorage(LAST_VIEWED_CLAIM_KEY, claimId.toString());
-    saveToSessionStorage(
-      SCROLL_POSITION_KEY,
-      scrollContainerRef.current?.scrollTop.toString() || "0"
-    );
-    router.push(`/admin_panel/claims/${claimId}`);
-  }, [router]);
+  const handleRowClick = useCallback(
+    (claimId: number) => {
+      saveToSessionStorage(LAST_VIEWED_CLAIM_KEY, claimId.toString());
+      saveToSessionStorage(
+        SCROLL_POSITION_KEY,
+        scrollContainerRef.current?.scrollTop.toString() || '0'
+      );
+      router.push(`/admin_panel/claims/${claimId}`);
+    },
+    [router]
+  );
 
   // Функция для очистки кеша
   const clearCache = useCallback(() => {
@@ -267,66 +284,71 @@ export default function ClaimsPage() {
 
   const columns: ColumnDef<Claim>[] = [
     {
-      accessorKey: "id",
-      header: "ID",
-      cell: ({ row }) => <div className="w-[5%]">{row.getValue("id")}</div>,
+      accessorKey: 'id',
+      header: 'ID',
+      cell: ({ row }) => <div className='w-[5%]'>{row.getValue('id')}</div>,
     },
     {
-      accessorKey: "status",
-      header: "Статус",
+      accessorKey: 'status',
+      header: 'Статус',
       cell: ({ row }) => {
-        const status: 'pending' | 'accepted' | 'completed' | 'declined' = row.getValue('status');
-        return <Status status={statusParser[status || ClaimStatus.PENDING]} />
-      }
+        const status: 'pending' | 'accepted' | 'completed' | 'declined' =
+          row.getValue('status');
+        return <Status status={statusParser[status || ClaimStatus.PENDING]} />;
+      },
     },
     {
-      accessorKey: "title",
-      header: "Название",
+      accessorKey: 'title',
+      header: 'Название',
       cell: ({ row }) => {
-        const title = row.getValue("title") as string;
+        const title = row.getValue('title') as string;
         return (
-          <p className="max-w-prose break-words hyphens-auto leading-relaxed">
+          <p className='max-w-prose break-words hyphens-auto leading-relaxed'>
             {title}
           </p>
         );
       },
     },
     {
-      accessorKey: "description",
-      header: "Описание",
+      accessorKey: 'description',
+      header: 'Описание',
       cell: ({ row }) => {
-        const description = row.getValue("description") as string;
+        const description = row.getValue('description') as string;
         return <div>{getShortText(description)}</div>;
       },
     },
     {
-      accessorKey: "created_at",
-      header: "Дата",
+      accessorKey: 'created_at',
+      header: 'Дата',
       cell: ({ row }) => {
-        const created_at = new Date(row.getValue("created_at") as string);
+        const created_at = new Date(row.getValue('created_at') as string);
         return <div>{format(created_at, 'dd.MM.yyyy HH:mm')}</div>;
-      }
+      },
     },
     {
-      accessorKey: "edit",
-      header: "",
+      accessorKey: 'edit',
+      header: '',
       cell: ({ row }) => {
-        const id = row.getValue("id") as number;
+        const id = row.getValue('id') as number;
         return (
           <PenBox
-            className="w-auto h-auto text-black hover:bg-gray-300 p-2 rounded-md cursor-pointer"
+            className='w-auto h-auto text-black hover:bg-gray-300 p-2 rounded-md cursor-pointer'
             // В колонке "edit" обновить обработчик клика:
             onClick={(e) => {
               e.stopPropagation();
               if (isHydrated) {
                 saveToSessionStorage(LAST_VIEWED_CLAIM_KEY, id.toString());
-                saveToSessionStorage(SCROLL_POSITION_KEY, scrollContainerRef.current?.scrollTop.toString() || "0");
+                saveToSessionStorage(
+                  SCROLL_POSITION_KEY,
+                  scrollContainerRef.current?.scrollTop.toString() || '0'
+                );
               }
               router.push(`/admin_panel/claims/${id}`);
-            }} />
+            }}
+          />
         );
-      }
-    }
+      },
+    },
   ];
 
   const table = useReactTable({
@@ -338,47 +360,51 @@ export default function ClaimsPage() {
   if (error) {
     return (
       <AdminLayout>
-        <div className="flex flex-col text-3xl h-full w-full items-center justify-center">
-          <p>Ошибка загрузки данных:<br />{error.message}</p>
+        <div className='flex flex-col text-3xl h-full w-full items-center justify-center'>
+          <p>
+            Ошибка загрузки данных:
+            <br />
+            {error.message}
+          </p>
           <button
             onClick={clearCache}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className='mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
           >
             Очистить кеш и попробовать снова
           </button>
         </div>
       </AdminLayout>
-    )
+    );
   }
 
   // Показываем загрузку во время гидрации или если нет данных и идет загрузка
   if (!isHydrated || (isLoading && allClaims.length === 0)) {
     return (
       <AdminLayout>
-        <div className="flex flex-col h-full w-full items-center justify-center">
-          <Loader2 className="h-16 w-16 animate-spin" />
-          <p className="mt-4 text-lg text-gray-600">
+        <div className='flex flex-col h-full w-full items-center justify-center'>
+          <Loader2 className='h-16 w-16 animate-spin' />
+          <p className='mt-4 text-lg text-gray-600'>
             {!isHydrated ? 'Инициализация...' : 'Загрузка заявок...'}
           </p>
         </div>
       </AdminLayout>
-    )
+    );
   }
 
   return (
     <AdminLayout>
-      <div className="flex gap-5 w-full h-full justify-between items-start">
-        <div className="w-full h-full flex flex-col space-y-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Список заявок</h1>
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-500">
+      <div className='flex gap-5 w-full h-full justify-between items-start'>
+        <div className='w-full h-full flex flex-col space-y-4'>
+          <div className='flex items-center justify-between'>
+            <h1 className='text-2xl font-bold'>Список заявок</h1>
+            <div className='flex items-center gap-4'>
+              <div className='text-sm text-gray-500'>
                 Загружено: {allClaims.length} заявок
               </div>
               <button
                 onClick={clearCache}
-                className="text-xs px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-                title="Обновить данные"
+                className='text-xs px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300'
+                title='Обновить данные'
               >
                 Обновить
               </button>
@@ -388,10 +414,10 @@ export default function ClaimsPage() {
           <div
             ref={scrollContainerRef}
             onScroll={handleScroll}
-            className="overflow-y-auto rounded-lg border shadow-sm"
+            className='overflow-y-auto rounded-lg border shadow-sm'
             style={{
               height: 'calc(100vh - 200px)',
-              minHeight: '600px'
+              minHeight: '600px',
             }}
           >
             {allClaims.length > 0 ? (
@@ -403,23 +429,25 @@ export default function ClaimsPage() {
 
                 <div
                   ref={observerRef}
-                  className="h-20 flex items-center justify-center"
+                  className='h-20 flex items-center justify-center'
                 >
                   {isLoadingMore && hasMore && (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                      <span className="text-sm text-gray-500">Загружаем больше заявок...</span>
+                    <div className='flex items-center gap-2'>
+                      <Loader2 className='h-6 w-6 animate-spin' />
+                      <span className='text-sm text-gray-500'>
+                        Загружаем больше заявок...
+                      </span>
                     </div>
                   )}
                   {!hasMore && !isLoadingMore && allClaims.length > 0 && (
-                    <div className="text-sm text-gray-500 py-4">
+                    <div className='text-sm text-gray-500 py-4'>
                       Все заявки загружены
                     </div>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="flex w-full h-full items-center justify-center text-xl text-gray-500">
+              <div className='flex w-full h-full items-center justify-center text-xl text-gray-500'>
                 Заявки не найдены
               </div>
             )}

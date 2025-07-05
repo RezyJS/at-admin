@@ -17,11 +17,8 @@ export async function POST(request: NextRequest) {
   });
 
   if (apiRequest.error) {
-    console.info(apiRequest.status);
     return NextResponse.error();
   }
-
-  console.info(apiRequest.body);
 
   return afterFetcher(apiRequest);
 }

@@ -16,6 +16,7 @@ import {
   useReactTable,
   getCoreRowModel,
 } from '@tanstack/react-table';
+import { toast } from 'sonner';
 
 const statusParser = {
   pending: ClaimStatus.PENDING,
@@ -39,14 +40,12 @@ const CLAIMS_HAS_MORE_KEY = (email: string) =>
 
 const page_size = 15;
 
-const saveToSessionStorage = (key: string, data: any) => {
+const saveToSessionStorage = (key: string, data: unknown) => {
   try {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem(key, JSON.stringify(data));
     }
-  } catch (error) {
-    console.warn('Ошибка сохранения в sessionStorage:', error);
-  }
+  } catch {}
 };
 
 const loadFromSessionStorage = (key: string) => {
@@ -56,8 +55,7 @@ const loadFromSessionStorage = (key: string) => {
       return item ? JSON.parse(item) : null;
     }
     return null;
-  } catch (error) {
-    console.warn('Ошибка загрузки из sessionStorage:', error);
+  } catch {
     return null;
   }
 };
@@ -72,20 +70,18 @@ const claimsFetcher = (
   page_size: number
 ) => axios.post(url, { id, cursor, page_size }).then((res) => res.data);
 
-// // Новая функция для проверки блокировки пользователя
-// const checkUserBlockedStatus = (uid: string) =>
-//   axios.post('/api/admin/isUserBlocked', { uid }).then((res) => res.data);
-const checkUserBlockedStatus = (uid: string) =>
-  new Promise((resolve) =>
-    resolve({
-      isBlocked: true,
-    })
-  );
+const blockedFetcher = (url: string, email: string) =>
+  axios.post(url, { email }).then((res) => res.data);
 
 export default function UserPage() {
   const router = useRouter();
   const email = decodeURIComponent(useParams().email as string);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const { data: isBlocked, isLoading: blockLoading } = useSWR(
+    ['/api/dataFetching/isUserBlocked', email],
+    ([url, email]) => blockedFetcher(url, email)
+  );
 
   const [isHydrated, setIsHydrated] = useState(false);
   const [allClaims, setAllClaims] = useState<Claim[]>([]);
@@ -93,7 +89,7 @@ export default function UserPage() {
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [isUserBlocked, setIsUserBlocked] = useState<boolean | null>(null);
+  // const [isUserBlocked, setIsUserBlocked] = useState<boolean>(isBlocked);
 
   // Очистка кэша при смене пользователя
   useEffect(() => {
@@ -104,7 +100,6 @@ export default function UserPage() {
     setHasMore(true);
     setIsInitialLoad(true);
     setIsLoadingMore(false);
-    setIsUserBlocked(null);
   }, [email, isHydrated]);
 
   // Загрузка данных из кэша при монтировании
@@ -135,23 +130,11 @@ export default function UserPage() {
     isLoading: userLoading,
     error: userError,
     mutate: mutateUser,
-  } = useSWR(email ? [`/api/dataFetching/user`, email] : null, ([url, email]) =>
+  } = useSWR([`/api/dataFetching/user`, email], ([url, email]) =>
     userFetcher(url, email)
   );
 
-  // Проверка статуса блокировки пользователя
-  useEffect(() => {
-    if (user?.uid) {
-      checkUserBlockedStatus(user.uid)
-        .then((data) => {
-          setIsUserBlocked(data.isBlocked);
-        })
-        .catch((error) => {
-          console.error('Ошибка при проверке статуса блокировки:', error);
-          setIsUserBlocked(null);
-        });
-    }
-  }, [user?.uid]);
+  const [isUserBlocked, setIsUserBlocked] = useState<boolean>(true);
 
   const shouldFetch =
     hasMore && isHydrated && (allClaims.length === 0 || !isInitialLoad);
@@ -286,20 +269,30 @@ export default function UserPage() {
 
   const toggleBlock = async () => {
     if (!user) return;
-    const newBlockStatus = !isUserBlocked;
-    setIsUserBlocked(newBlockStatus);
 
-    try {
-      await axios.put(`/api/admin/block-user`, {
-        email: user.email,
-        block: newBlockStatus,
-      });
-      // После успешного изменения статуса обновляем данные пользователя
-      mutateUser();
-    } catch (error) {
-      console.error('Ошибка при изменении статуса блокировки:', error);
-      // В случае ошибки возвращаем предыдущее состояние
-      setIsUserBlocked(!newBlockStatus);
+    if (isBlocked) {
+      try {
+        await axios.post(`/api/admin/block-user`, {
+          uid: user.uid,
+          reason: 'TODO',
+        });
+        // После успешного изменения статуса обновляем данные пользователя
+        mutateUser();
+        setIsUserBlocked(true);
+      } catch {
+        toast('Ошибка');
+      }
+    } else {
+      try {
+        await axios.post(`/api/admin/unblock-user`, {
+          uid: user.uid,
+        });
+        // После успешного изменения статуса обновляем данные пользователя
+        mutateUser();
+        setIsUserBlocked(false);
+      } catch {
+        toast('Ошибка');
+      }
     }
   };
 
@@ -376,11 +369,7 @@ export default function UserPage() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  if (
-    userLoading ||
-    (!isHydrated && allClaims.length === 0) ||
-    isUserBlocked === null
-  ) {
+  if (userLoading || blockLoading || (!isHydrated && allClaims.length === 0)) {
     return (
       <AdminLayout>
         <Loader2 className='h-12 w-12 animate-spin text-gray-400' />

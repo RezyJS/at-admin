@@ -6,17 +6,18 @@ export async function POST(request: NextRequest) {
   const refresh = request.cookies.get('refresh_token')?.value;
   const access = request.cookies.get('access_token')?.value;
 
-  const { uid, reason } = await request.json();
+  const { email, uid } = await request.json();
 
   const apiRequest = await fetcher({
-    url: `${apiURL}/admin/v1/users/${uid}/block`,
+    url: `${apiURL}/admin/v1/users/${uid}/unblock`,
     method: 'POST',
-    body: JSON.stringify({ reason }),
+    body: JSON.stringify({ email }),
     refresh,
     access,
   });
 
   if (apiRequest.error) {
+    console.info(apiRequest.status);
     return NextResponse.error();
   }
 

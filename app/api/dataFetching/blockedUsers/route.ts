@@ -12,10 +12,7 @@ export async function GET(request: NextRequest) {
     access,
   });
 
-  console.info('blocked');
-
   if (apiRequest.error) {
-    console.info(apiRequest.status);
     return NextResponse.error();
   }
 

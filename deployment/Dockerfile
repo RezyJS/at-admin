@@ -33,7 +33,6 @@ USER nextjs
 # Copy built artifacts
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 # PNPM-specific start command
 CMD ["node", "server.js"]

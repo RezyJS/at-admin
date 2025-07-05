@@ -18,7 +18,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.error();
   }
 
-  console.info(apiRequest.body);
-
   return afterFetcher(apiRequest);
 }

@@ -40,9 +40,7 @@ const saveToSessionStorage = (key: string, data: any) => {
     if (typeof window !== 'undefined') {
       sessionStorage.setItem(key, JSON.stringify(data));
     }
-  } catch (error) {
-    console.warn('Failed to save to sessionStorage:', error);
-  }
+  } catch {}
 };
 
 const loadFromSessionStorage = (key: string) => {
@@ -52,8 +50,7 @@ const loadFromSessionStorage = (key: string) => {
       return item ? JSON.parse(item) : null;
     }
     return null;
-  } catch (error) {
-    console.warn('Failed to load from sessionStorage:', error);
+  } catch {
     return null;
   }
 };
