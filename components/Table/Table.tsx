@@ -16,6 +16,47 @@ import { Key, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { Claim } from '../Status/Status';
 
+type BlockedUser = {
+  id: number;
+  uid: number;
+  email: string;
+  blocked_at: string;
+};
+
+export function MyBlockedUsersTable({
+  table,
+  onRowClick,
+}: {
+  table: TypeTable<BlockedUser>;
+  onRowClick: (claimId: number) => void;
+}) {
+  return (
+    <MyTable table={table}>
+      {table.getRowModel().rows.map((row) => (
+        <TableRow
+          key={row.id}
+          className='even:bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer'
+          onClick={(e) => {
+            e.stopPropagation();
+            onRowClick(row.original.id);
+          }}
+        >
+          {row.getVisibleCells().map((cell) => {
+            return (
+              <TableCell
+                key={cell.id}
+                className='w-max px-4'
+              >
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </TableCell>
+            );
+          })}
+        </TableRow>
+      ))}
+    </MyTable>
+  );
+}
+
 export function MyClaimsTable({
   table,
   onRowClick,

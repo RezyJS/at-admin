@@ -8,7 +8,8 @@ export const baseURL = process.env.NEXT_PUBLIC_URL;
 
 export const afterFetcher = (
   apiRequest: FetcherResult,
-  body?: 'claims' | 'news' | 'admins'
+  body?: 'claims' | 'news' | 'admins' | 'block',
+  isBlocked?: boolean
 ) => {
   const response = (function () {
     switch (body) {
@@ -18,6 +19,8 @@ export const afterFetcher = (
         return NextResponse.json(apiRequest.body.announcements);
       case 'admins':
         return NextResponse.json(apiRequest.body.admins);
+      case 'block':
+        return NextResponse.json({ isBlocked });
       default:
         return NextResponse.json(apiRequest.body);
     }
@@ -30,14 +33,14 @@ export const afterFetcher = (
       httpOnly: true,
       maxAge: 15 * 60, // 15 minutes
       secure: true,
-      sameSite: 'strict'
+      sameSite: 'strict',
     });
 
     response!.cookies.set('refresh_token', refresh, {
       httpOnly: true,
       maxAge: 90 * 24 * 60 * 60, // 30 days
       secure: true,
-      sameSite: 'strict'
+      sameSite: 'strict',
     });
   }
 

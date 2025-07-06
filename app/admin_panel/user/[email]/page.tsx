@@ -83,13 +83,19 @@ export default function UserPage() {
     ([url, email]) => blockedFetcher(url, email)
   );
 
+  useEffect(() => {
+    if (isBlocked) {
+      setIsUserBlocked(isBlocked.isBlocked);
+    }
+  }, [isBlocked]);
+
   const [isHydrated, setIsHydrated] = useState(false);
   const [allClaims, setAllClaims] = useState<Claim[]>([]);
   const [cursor, setCursor] = useState<string>('');
   const [hasMore, setHasMore] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  // const [isUserBlocked, setIsUserBlocked] = useState<boolean>(isBlocked);
+  const [isUserBlocked, setIsUserBlocked] = useState<boolean>(false);
 
   // Очистка кэша при смене пользователя
   useEffect(() => {
@@ -133,8 +139,6 @@ export default function UserPage() {
   } = useSWR([`/api/dataFetching/user`, email], ([url, email]) =>
     userFetcher(url, email)
   );
-
-  const [isUserBlocked, setIsUserBlocked] = useState<boolean>(true);
 
   const shouldFetch =
     hasMore && isHydrated && (allClaims.length === 0 || !isInitialLoad);
@@ -270,17 +274,16 @@ export default function UserPage() {
   const toggleBlock = async () => {
     if (!user) return;
 
-    if (isBlocked) {
+    if (!isUserBlocked) {
       try {
         await axios.post(`/api/admin/block-user`, {
           uid: user.uid,
           reason: 'TODO',
         });
         // После успешного изменения статуса обновляем данные пользователя
-        mutateUser();
         setIsUserBlocked(true);
       } catch {
-        toast('Ошибка');
+        toast('Ошибка блокировки');
       }
     } else {
       try {
@@ -288,10 +291,9 @@ export default function UserPage() {
           uid: user.uid,
         });
         // После успешного изменения статуса обновляем данные пользователя
-        mutateUser();
         setIsUserBlocked(false);
       } catch {
-        toast('Ошибка');
+        toast('Ошибка разблокировки');
       }
     }
   };

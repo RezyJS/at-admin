@@ -35,8 +35,7 @@ export default function AdminLayout({
   };
 
   const handleSignOut = () => {
-    axios.post('/api/signout');
-    router.push(`${baseURL}/auth`);
+    axios.post('/api/signout').finally(() => router.push(`${baseURL}/auth`));
   };
 
   return (

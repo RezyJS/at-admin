@@ -21,15 +21,25 @@ export async function POST(request: NextRequest) {
   }
 
   const apiRequest = await fetcher({
-    url: `${apiURL}/admin/v1/${userSearch.body.uid}/check-block`,
+    url: `${apiURL}/admin/v1/users/${userSearch.body.uid}/check-block`,
     method: 'GET',
     access,
     refresh,
   });
 
-  if (apiRequest.error) {
+  if (apiRequest.error && apiRequest.status !== 404) {
     return NextResponse.error();
   }
 
-  return afterFetcher(apiRequest);
+  const isBlocked = (() => {
+    switch (apiRequest.status) {
+      case 200:
+        return true;
+      case 404:
+      default:
+        return false;
+    }
+  })();
+
+  return afterFetcher(apiRequest, 'block', isBlocked);
 }
