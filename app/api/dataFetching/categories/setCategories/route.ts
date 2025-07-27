@@ -7,14 +7,14 @@ export async function POST(request: NextRequest) {
   const access = request.cookies.get('access_token')?.value;
 
   const { categories } = await request.json();
-  const body = JSON.stringify({ Categories: categories });
+  const body = JSON.stringify({ categories });
 
   const apiRequest = await fetcher({
     url: `${apiURL}/admin/v1/categories/`,
     method: 'PUT',
     body,
     refresh,
-    access
+    access,
   });
 
   if (apiRequest.error) {

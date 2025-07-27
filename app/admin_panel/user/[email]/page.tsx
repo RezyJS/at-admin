@@ -65,10 +65,10 @@ const userFetcher = (url: string, email: string) =>
 
 const claimsFetcher = (
   url: string,
-  id: string,
+  uid: string,
   cursor: string,
   page_size: number
-) => axios.post(url, { id, cursor, page_size }).then((res) => res.data);
+) => axios.post(url, { uid, cursor, page_size }).then((res) => res.data);
 
 const blockedFetcher = (url: string, email: string) =>
   axios.post(url, { email }).then((res) => res.data);

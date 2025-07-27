@@ -58,7 +58,7 @@ const fetcher = async (args: FetcherArguments): Promise<FetcherResult> => {
       }
     }
 
-    return { error: true, status: request.status, body: {} };
+    return { error: true, status: request.status, body: request.body };
   };
 
   if (!args.access) {
@@ -113,7 +113,7 @@ const fetcher = async (args: FetcherArguments): Promise<FetcherResult> => {
       Authorization: `Bearer ${newAccess}`,
     });
     if (retry.error) {
-      return { error: true, status: retry.status, body: {} };
+      return { error: true, status: retry.status, body: retry.body };
     }
 
     const result = retry.body;
@@ -126,7 +126,7 @@ const fetcher = async (args: FetcherArguments): Promise<FetcherResult> => {
     };
   }
 
-  return { error: true, status: initial.status, body: {} };
+  return { error: true, status: initial.status, body: initial.body };
 };
 
 export default fetcher;

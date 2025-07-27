@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   const apiRequest = await fetcher({
     url: `${apiURL}/admin/v1/admins`,
     refresh,
-    access
+    access,
   });
 
   if (apiRequest.error) {
@@ -41,11 +41,11 @@ export async function POST(request: NextRequest) {
   const access = request.cookies.get('access_token')?.value;
 
   const apiRequest = await fetcher({
-    url: `${apiURL}/admin/v1/admins`,
+    url: `${apiURL}/admin/v1/admins/add`,
     method: 'POST',
     body: JSON.stringify({ email: body.email }),
     refresh,
-    access
+    access,
   });
 
   if (apiRequest.error) {
@@ -79,11 +79,11 @@ export async function DELETE(request: NextRequest) {
   const access = request.cookies.get('access_token')?.value;
 
   const apiRequest = await fetcher({
-    url: `${apiURL}/admin/v1/admins`,
-    method: 'DELETE',
+    url: `${apiURL}/admin/v1/admins/remove`,
+    method: 'POST',
     body: JSON.stringify({ email: body.email }),
     refresh,
-    access
+    access,
   });
 
   if (apiRequest.error) {
