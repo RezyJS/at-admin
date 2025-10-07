@@ -34,7 +34,7 @@ USER nextjs
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-EXPOSE 80
+EXPOSE 3000
 
 # PNPM-specific start command
 CMD ["node", "server.js"]
