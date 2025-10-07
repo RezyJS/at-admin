@@ -1,34 +1,37 @@
 import { NextResponse, NextRequest } from 'next/server';
 
-const baseURL = process.env.NEXT_PUBLIC_URL;
-
 export async function middleware(request: NextRequest) {
   const refresh_token = request.cookies.get('refresh_token');
+  const url = request.nextUrl.clone();
 
   if (
     refresh_token &&
     refresh_token.value &&
     !request.nextUrl.pathname.startsWith('/admin_panel')
   ) {
-    return NextResponse.redirect(`${baseURL}/admin_panel/claims`);
+    url.pathname = '/admin_panel/claims';
+    return NextResponse.rewrite(url);
   }
 
   if (
     (!request.nextUrl.pathname.startsWith('/auth') && !refresh_token) ||
     (refresh_token && !refresh_token.value)
   ) {
-    return NextResponse.redirect(`${baseURL}/auth`);
+    url.pathname = '/auth';
+    return NextResponse.rewrite(url);
   }
 
   if (request.nextUrl.pathname === '/') {
-    return NextResponse.redirect(`${baseURL}/auth`);
+    url.pathname = '/auth';
+    return NextResponse.rewrite(url);
   }
 
   if (request.nextUrl.pathname === '/admin_panel') {
-    return NextResponse.redirect(`${baseURL}/admin_panel/claims`);
+    url.pathname = '/admin_panel/claims';
+    return NextResponse.rewrite(url);
   }
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
