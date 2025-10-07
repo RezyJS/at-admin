@@ -135,7 +135,6 @@ export default function UserPage() {
     data: user,
     isLoading: userLoading,
     error: userError,
-    mutate: mutateUser,
   } = useSWR([`/api/dataFetching/user`, email], ([url, email]) =>
     userFetcher(url, email)
   );

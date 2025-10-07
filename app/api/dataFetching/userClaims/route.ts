@@ -3,7 +3,7 @@ import { afterFetcher, apiURL } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-  const { uid, cursor, page_size = 15 } = await request.json();
+  const { uid, page_size = 15 } = await request.json();
 
   const refresh = request.cookies.get('refresh_token')?.value;
   const access = request.cookies.get('access_token')?.value;

@@ -6,12 +6,10 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { format, parseISO } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { format } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 import axios from 'axios';
 import useSWR from 'swr';
-import { ReactNode } from 'react';
 import { MyBlockedUsersTable } from '@/components/Table/Table';
 
 type BlockedUser = {

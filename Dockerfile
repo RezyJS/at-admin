@@ -4,16 +4,16 @@ FROM node:23-alpine AS base
 
 WORKDIR /app
 
-# Enable corepack (official way to manage pnpm)
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Enable corepack
+RUN corepack enable
 
 # ===== Builder Stage =====
 FROM base AS builder
 
-# Copy lock files FIRST (speed hack)
+# Copy lock files FIRST
 COPY pnpm-lock.yaml package.json .npmrc* ./
 
-# PNPM install (--frozen-lockfile = zero surprises)
+# PNPM install
 RUN pnpm install --frozen-lockfile
 
 # Copy rest and build
@@ -25,7 +25,7 @@ FROM base AS runner
 
 WORKDIR /app
 
-# Non-root user (security flex)
+# Non-root user
 RUN addgroup -g 1001 -S nodejs && \
   adduser -u 1001 -S nextjs -G nodejs
 USER nextjs
