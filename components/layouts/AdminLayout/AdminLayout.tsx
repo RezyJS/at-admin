@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation';
 import { ReactNode, useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { Loader2 } from 'lucide-react';
+import { baseURL } from '@/lib/utils';
 
-const baseURL = process.env.NEXT_PUBLIC_URL;
 const fetcher = (url: string) => axios.post(url).then((res) => res.data);
 
 export default function AdminLayout({
