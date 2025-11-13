@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import { FetcherResult } from './fetcher';
 
 export const apiURL = process.env.NEXT_PUBLIC_API_URL;
-export const baseURL = process.env.NEXT_PUBLIC_URL;
+export const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export const afterFetcher = (
   apiRequest: FetcherResult,

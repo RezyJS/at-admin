@@ -5,7 +5,10 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
   let refresh_token, access_token;
 
+  console.info('started checking');
+
   if (!request.cookies.get('refresh_token')) {
+    console.info('no cookies');
     const tokens = await request.json();
     refresh_token = tokens.refresh_token;
     access_token = tokens.access_token;
@@ -14,13 +17,15 @@ export async function POST(request: NextRequest) {
     access_token = request.cookies.get('access_token')?.value;
   }
 
+  console.info('started request');
   const apiRequest = await fetcher({
     url: `${apiURL}/admin/v1/admins/privileges`,
     refresh: refresh_token,
-    access: access_token
+    access: access_token,
   });
 
   if (apiRequest.error) {
+    console.info('got error');
     return NextResponse.error();
   }
 

@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
 
   const apiResponse = await axios.post(`${apiURL}/v1/auth/confirm-login`, {
     email,
-    code: +code
+    code: +code,
   });
 
   const { access_token, refresh_token } = apiResponse.data;
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
   const { is_admin } = await axios
     .post(`${baseURL}/api/dataFetching/checkAdmin`, {
       refresh_token,
-      access_token
+      access_token,
     })
     .then((res) => res.data.privileges);
 
@@ -28,14 +28,14 @@ export async function POST(request: NextRequest) {
     httpOnly: true,
     maxAge: 90 * 24 * 60 * 60,
     secure: true,
-    sameSite: 'strict'
+    sameSite: 'strict',
   });
 
   response.cookies.set('access_token', access_token, {
     httpOnly: true,
     maxAge: 15 * 60,
     secure: true,
-    sameSite: 'strict'
+    sameSite: 'strict',
   });
 
   return response;
