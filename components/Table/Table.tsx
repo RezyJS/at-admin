@@ -28,7 +28,7 @@ export function MyBlockedUsersTable({
   onRowClick,
 }: {
   table: TypeTable<BlockedUser>;
-  onRowClick: (claimId: number) => void;
+  onRowClick: (userEmail: string) => void;
 }) {
   return (
     <MyTable table={table}>
@@ -38,7 +38,7 @@ export function MyBlockedUsersTable({
           className='even:bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer'
           onClick={(e) => {
             e.stopPropagation();
-            onRowClick(row.original.id);
+            onRowClick(row.original.email);
           }}
         >
           {row.getVisibleCells().map((cell) => {
@@ -110,7 +110,7 @@ export function MyNewsTable({
   return (
     <div className='w-full overflow-x-auto'>
       <table className='w-full table-fixed'>
-        <thead className='bg-gray-50 sticky top-0 z-[5]'>
+        <thead className='bg-gray-50 sticky top-0 z-5'>
           {table
             .getHeaderGroups()
             .map(
@@ -240,11 +240,11 @@ function MyTable({
   return (
     <div className='w-full overflow-x-auto'>
       <Table>
-        <TableHeader className='bg-gray-50 sticky top-0 z-[5]'>
+        <TableHeader className='bg-gray-50 sticky top-0 z-5'>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow
               key={headerGroup.id}
-              className='[&>th]:sticky [&>th]:top-0 [&>th]:z-[6]'
+              className='[&>th]:sticky [&>th]:top-0 [&>th]:z-6'
             >
               {headerGroup.headers.map((header) => {
                 const isIdColumn = header.column.id === 'id';

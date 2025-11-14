@@ -7,10 +7,11 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Router } from 'lucide-react';
 import axios from 'axios';
 import useSWR from 'swr';
 import { MyBlockedUsersTable } from '@/components/Table/Table';
+import { useRouter } from 'next/navigation';
 
 type BlockedUser = {
   id: number;
@@ -20,6 +21,7 @@ type BlockedUser = {
 };
 
 export default function BlockedUsersPage() {
+  const router = useRouter();
   const { data, error, isLoading, mutate } = useSWR<{
     blocked_users: BlockedUser[];
   }>(
@@ -31,7 +33,9 @@ export default function BlockedUsersPage() {
     }
   );
 
-  const handleUnblock = async (userId: number) => {
+  const handleUnblock = async (userId: number, event: any) => {
+    event.stopPropagation();
+
     if (!confirm('Вы уверены, что хотите разблокировать этого пользователя?'))
       return;
 
@@ -75,7 +79,7 @@ export default function BlockedUsersPage() {
       header: 'Действия',
       cell: ({ row }) => (
         <button
-          onClick={() => handleUnblock(row.original.uid)}
+          onClick={(event) => handleUnblock(row.original.uid, event)}
           className='px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors'
         >
           Разблокировать
@@ -145,7 +149,9 @@ export default function BlockedUsersPage() {
             {data?.blocked_users && data.blocked_users.length > 0 ? (
               <MyBlockedUsersTable
                 table={table}
-                onRowClick={() => {}}
+                onRowClick={(email) => {
+                  router.push(`/admin_panel/user/${email}`);
+                }}
               />
             ) : (
               <div className='flex w-full h-64 items-center justify-center text-xl text-gray-500'>
