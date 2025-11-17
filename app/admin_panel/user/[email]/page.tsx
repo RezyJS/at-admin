@@ -1,6 +1,5 @@
 'use client';
 
-import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import axios from 'axios';
 import { format } from 'date-fns';
@@ -371,116 +370,108 @@ export default function UserPage() {
   });
 
   if (userLoading || blockLoading || (!isHydrated && allClaims.length === 0)) {
-    return (
-      <AdminLayout>
-        <Loader2 className='h-12 w-12 animate-spin text-gray-400' />
-      </AdminLayout>
-    );
+    return <Loader2 className='h-12 w-12 animate-spin text-gray-400' />;
   }
 
   if (userError) {
-    return <AdminLayout>Ошибка загрузки пользователя.</AdminLayout>;
+    return <p>Ошибка загрузки пользователя.</p>;
   }
 
   if (!user) {
-    return <AdminLayout>Пользователь не найден.</AdminLayout>;
+    return <p>Пользователь не найден.</p>;
   }
 
   return (
-    <AdminLayout>
-      <div className='space-y-8'>
-        {/* Информация о пользователе */}
-        <div className='bg-white rounded-lg shadow p-6'>
-          <div className='flex justify-between items-start'>
-            <div>
-              <h1 className='text-2xl font-bold mb-4'>Страница пользователя</h1>
-              <div className='space-y-2'>
-                <p>
-                  <strong>UID:</strong> {user.uid}
-                </p>
-                <p>
-                  <strong>Email:</strong> {user.email}
-                </p>
-                <p>
-                  <strong>Зарегистрирован:</strong>{' '}
-                  {format(new Date(user.registered_at), 'dd.MM.yyyy HH:mm')}
-                </p>
-                <p>
-                  <strong>Состояние:</strong>{' '}
-                  <span
-                    className={
-                      isUserBlocked ? 'text-red-500' : 'text-green-500'
-                    }
-                  >
-                    {isUserBlocked ? 'Заблокирован' : 'Активный'}
-                  </span>
-                </p>
-              </div>
+    <div className='space-y-8'>
+      {/* Информация о пользователе */}
+      <div className='bg-white rounded-lg shadow p-6'>
+        <div className='flex justify-between items-start'>
+          <div>
+            <h1 className='text-2xl font-bold mb-4'>Страница пользователя</h1>
+            <div className='space-y-2'>
+              <p>
+                <strong>UID:</strong> {user.uid}
+              </p>
+              <p>
+                <strong>Email:</strong> {user.email}
+              </p>
+              <p>
+                <strong>Зарегистрирован:</strong>{' '}
+                {format(new Date(user.registered_at), 'dd.MM.yyyy HH:mm')}
+              </p>
+              <p>
+                <strong>Состояние:</strong>{' '}
+                <span
+                  className={isUserBlocked ? 'text-red-500' : 'text-green-500'}
+                >
+                  {isUserBlocked ? 'Заблокирован' : 'Активный'}
+                </span>
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={toggleBlock}
+            variant={isUserBlocked ? 'outline' : 'destructive'}
+            className='flex items-center gap-2'
+          >
+            {isUserBlocked ? (
+              <Unlock className='h-4 w-4' />
+            ) : (
+              <Lock className='h-4 w-4' />
+            )}
+            {isUserBlocked ? 'Снять блокировку' : 'Заблокировать'}
+          </Button>
+        </div>
+      </div>
+
+      {/* Заявки пользователя */}
+      <div className='bg-white rounded-lg shadow p-6'>
+        <div className='flex justify-between items-center mb-6'>
+          <h2 className='text-xl font-semibold'>Заявки пользователя</h2>
+          <div className='flex items-center gap-4'>
+            <div className='text-sm text-gray-500'>
+              Загружено: {allClaims.length} заявок
             </div>
             <Button
-              onClick={toggleBlock}
-              variant={isUserBlocked ? 'outline' : 'destructive'}
-              className='flex items-center gap-2'
+              onClick={clearCache}
+              variant='outline'
+              size='sm'
+              className='text-sm'
             >
-              {isUserBlocked ? (
-                <Unlock className='h-4 w-4' />
-              ) : (
-                <Lock className='h-4 w-4' />
-              )}
-              {isUserBlocked ? 'Снять блокировку' : 'Заблокировать'}
+              Обновить
             </Button>
           </div>
         </div>
 
-        {/* Заявки пользователя */}
-        <div className='bg-white rounded-lg shadow p-6'>
-          <div className='flex justify-between items-center mb-6'>
-            <h2 className='text-xl font-semibold'>Заявки пользователя</h2>
-            <div className='flex items-center gap-4'>
-              <div className='text-sm text-gray-500'>
-                Загружено: {allClaims.length} заявок
-              </div>
-              <Button
-                onClick={clearCache}
-                variant='outline'
-                size='sm'
-                className='text-sm'
-              >
-                Обновить
-              </Button>
+        {claimsLoading && allClaims.length === 0 ? (
+          <div className='flex justify-center py-8'>
+            <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
+          </div>
+        ) : allClaims.length > 0 ? (
+          <div>
+            <MyClaimsTable
+              table={table}
+              onRowClick={handleRowClick}
+            />
+
+            <div className='mt-4 text-center'>
+              {isLoadingMore && hasMore && (
+                <div className='flex items-center justify-center gap-2 text-gray-500'>
+                  <Loader2 className='h-6 w-6 animate-spin' />
+                  <span>Загружаем больше заявок...</span>
+                </div>
+              )}
+              {!hasMore && !isLoadingMore && allClaims.length > 0 && (
+                <div className='text-gray-500'>Все заявки загружены</div>
+              )}
             </div>
           </div>
-
-          {claimsLoading && allClaims.length === 0 ? (
-            <div className='flex justify-center py-8'>
-              <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
-            </div>
-          ) : allClaims.length > 0 ? (
-            <div>
-              <MyClaimsTable
-                table={table}
-                onRowClick={handleRowClick}
-              />
-
-              <div className='mt-4 text-center'>
-                {isLoadingMore && hasMore && (
-                  <div className='flex items-center justify-center gap-2 text-gray-500'>
-                    <Loader2 className='h-6 w-6 animate-spin' />
-                    <span>Загружаем больше заявок...</span>
-                  </div>
-                )}
-                {!hasMore && !isLoadingMore && allClaims.length > 0 && (
-                  <div className='text-gray-500'>Все заявки загружены</div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className='text-center py-8 text-gray-500'>
-              Заявки не найдены
-            </div>
-          )}
-        </div>
+        ) : (
+          <div className='text-center py-8 text-gray-500'>
+            Заявки не найдены
+          </div>
+        )}
       </div>
-    </AdminLayout>
+    </div>
   );
 }

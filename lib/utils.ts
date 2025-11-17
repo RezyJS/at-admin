@@ -29,14 +29,14 @@ export const afterFetcher = (
   if (apiRequest.refresh && apiRequest.access) {
     const { refresh, access } = apiRequest;
 
-    response!.cookies.set('access_token', access, {
+    response!.cookies.set('accessToken', access, {
       httpOnly: true,
       maxAge: 15 * 60, // 15 minutes
       secure: true,
       sameSite: 'strict',
     });
 
-    response!.cookies.set('refresh_token', refresh, {
+    response!.cookies.set('refreshToken', refresh, {
       httpOnly: true,
       maxAge: 90 * 24 * 60 * 60, // 30 days
       secure: true,

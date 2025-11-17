@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 
 export async function proxy(request: NextRequest) {
-  const refresh_token = request.cookies.get('refresh_token');
+  const refresh_token = request.cookies.get('refreshToken');
   const url = request.nextUrl.clone();
 
   if (
@@ -10,25 +10,25 @@ export async function proxy(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/admin_panel')
   ) {
     url.pathname = '/admin_panel/claims';
-    return NextResponse.rewrite(url);
-  } 
+    return NextResponse.redirect(url);
+  }
 
   if (
     (!request.nextUrl.pathname.startsWith('/auth') && !refresh_token) ||
     (refresh_token && !refresh_token.value)
   ) {
     url.pathname = '/auth';
-    return NextResponse.rewrite(url);
+    return NextResponse.redirect(url);
   }
 
   if (request.nextUrl.pathname === '/') {
     url.pathname = '/auth';
-    return NextResponse.rewrite(url);
+    return NextResponse.redirect(url);
   }
 
   if (request.nextUrl.pathname === '/admin_panel') {
     url.pathname = '/admin_panel/claims';
-    return NextResponse.rewrite(url);
+    return NextResponse.redirect(url);
   }
 }
 

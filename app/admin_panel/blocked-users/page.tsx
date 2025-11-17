@@ -1,6 +1,5 @@
 'use client';
 
-import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import {
   ColumnDef,
   getCoreRowModel,
@@ -96,71 +95,65 @@ export default function BlockedUsersPage() {
 
   if (isLoading) {
     return (
-      <AdminLayout>
-        <div className='flex flex-col h-full w-full items-center justify-center'>
-          <Loader2 className='h-16 w-16 animate-spin' />
-          <p className='mt-4 text-lg text-gray-600'>Загрузка данных...</p>
-        </div>
-      </AdminLayout>
+      <div className='flex flex-col h-full w-full items-center justify-center'>
+        <Loader2 className='h-16 w-16 animate-spin' />
+        <p className='mt-4 text-lg text-gray-600'>Загрузка данных...</p>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <AdminLayout>
-        <div className='flex flex-col text-3xl h-full w-full items-center justify-center'>
-          <p>
-            Ошибка загрузки данных:
-            <br />
-            {error.message}
-          </p>
-          <button
-            onClick={() => mutate()}
-            className='mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
-          >
-            Попробовать снова
-          </button>
-        </div>
-      </AdminLayout>
+      <div className='flex flex-col text-3xl h-full w-full items-center justify-center'>
+        <p>
+          Ошибка загрузки данных:
+          <br />
+          {error.message}
+        </p>
+        <button
+          onClick={() => mutate()}
+          className='mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
+        >
+          Попробовать снова
+        </button>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
-      <div className='flex gap-5 w-full h-full justify-between items-start'>
-        <div className='w-full h-full flex flex-col space-y-4'>
-          <div className='flex items-center justify-between'>
-            <h1 className='text-2xl font-bold'>Заблокированные пользователи</h1>
-            <div className='flex items-center gap-4'>
-              <div className='text-sm text-gray-500'>
-                Найдено: {data?.blocked_users?.length || 0} пользователей
-              </div>
-              <button
-                onClick={() => mutate()}
-                className='text-xs px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300'
-                title='Обновить данные'
-              >
-                Обновить
-              </button>
+    <div className='flex gap-5 w-full h-full justify-between items-start'>
+      <div className='w-full h-full flex flex-col space-y-4'>
+        <div className='flex items-center justify-between'>
+          <h1 className='text-2xl font-bold'>Заблокированные пользователи</h1>
+          <div className='flex items-center gap-4'>
+            <div className='text-sm text-gray-500'>
+              Найдено: {data?.blocked_users?.length || 0} пользователей
             </div>
-          </div>
-
-          <div className='overflow-y-auto rounded-lg border shadow-sm'>
-            {data?.blocked_users && data.blocked_users.length > 0 ? (
-              <MyBlockedUsersTable
-                table={table}
-                onRowClick={(email) => {
-                  router.push(`/admin_panel/user/${email}`);
-                }}
-              />
-            ) : (
-              <div className='flex w-full h-64 items-center justify-center text-xl text-gray-500'>
-                Заблокированные пользователи не найдены
-              </div>
-            )}
+            <button
+              onClick={() => mutate()}
+              className='text-xs px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300'
+              title='Обновить данные'
+            >
+              Обновить
+            </button>
           </div>
         </div>
+
+        <div className='overflow-y-auto rounded-lg border shadow-sm'>
+          {data?.blocked_users && data.blocked_users.length > 0 ? (
+            <MyBlockedUsersTable
+              table={table}
+              onRowClick={(email) => {
+                router.push(`/admin_panel/user/${email}`);
+              }}
+            />
+          ) : (
+            <div className='flex w-full h-64 items-center justify-center text-xl text-gray-500'>
+              Заблокированные пользователи не найдены
+            </div>
+          )}
+        </div>
       </div>
-    </AdminLayout>
+    </div>
   );
 }

@@ -5,8 +5,8 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function POST(request: NextRequest) {
   const { feedback, id } = await request.json();
 
-  const refresh = request.cookies.get('refresh_token')?.value;
-  const access = request.cookies.get('access_token')?.value;
+  const refresh = request.cookies.get('refreshToken')?.value;
+  const access = request.cookies.get('accessToken')?.value;
 
   const url = `${apiURL}/admin/v1/claims/${id}/feedback`;
 
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     body: JSON.stringify({ feedback }),
     method: 'POST',
     refresh,
-    access
+    access,
   });
 
   if (apiRequest.error) {

@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 export async function GET(request: NextRequest) {
-  const refresh = request.cookies.get('refresh_token')?.value;
-  const access = request.cookies.get('access_token')?.value;
+  const refresh = request.cookies.get('refreshToken')?.value;
+  const access = request.cookies.get('accessToken')?.value;
 
   const apiRequest = await fetcher({
     url: `${apiURL}/admin/v1/admins`,
@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const refresh = request.cookies.get('refresh_token')?.value;
-  const access = request.cookies.get('access_token')?.value;
+  const refresh = request.cookies.get('refreshToken')?.value;
+  const access = request.cookies.get('accessToken')?.value;
 
   const apiRequest = await fetcher({
     url: `${apiURL}/admin/v1/admins/add`,
@@ -75,8 +75,8 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  const refresh = request.cookies.get('refresh_token')?.value;
-  const access = request.cookies.get('access_token')?.value;
+  const refresh = request.cookies.get('refreshToken')?.value;
+  const access = request.cookies.get('accessToken')?.value;
 
   const apiRequest = await fetcher({
     url: `${apiURL}/admin/v1/admins/remove`,

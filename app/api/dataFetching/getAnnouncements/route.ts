@@ -6,8 +6,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const afterId = searchParams.get('afterId');
 
-  const refresh = request.cookies.get('refresh_token')?.value;
-  const access = request.cookies.get('access_token')?.value;
+  const refresh = request.cookies.get('refreshToken')?.value;
+  const access = request.cookies.get('accessToken')?.value;
 
   const url =
     afterId === undefined
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   const apiRequest = await fetcher({
     url,
     refresh,
-    access
+    access,
   });
 
   if (apiRequest.error) {

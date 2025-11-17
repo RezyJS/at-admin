@@ -7,14 +7,14 @@ export async function POST(request: NextRequest) {
 
   console.info('started checking');
 
-  if (!request.cookies.get('refresh_token')) {
+  if (!request.cookies.get('refreshToken')) {
     console.info('no cookies');
     const tokens = await request.json();
     refresh_token = tokens.refresh_token;
     access_token = tokens.access_token;
   } else {
-    refresh_token = request.cookies.get('refresh_token')?.value;
-    access_token = request.cookies.get('access_token')?.value;
+    refresh_token = request.cookies.get('refreshToken')?.value;
+    access_token = request.cookies.get('accessToken')?.value;
   }
 
   console.info('started request');

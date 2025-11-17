@@ -7,8 +7,8 @@ export async function GET(request: NextRequest) {
   const cursor = searchParams.get('cursor');
   const pageSize = searchParams.get('page_size');
 
-  const refresh = request.cookies.get('refresh_token')?.value;
-  const access = request.cookies.get('access_token')?.value;
+  const refresh = request.cookies.get('refreshToken')?.value;
+  const access = request.cookies.get('accessToken')?.value;
 
   const url = cursor
     ? `${apiURL}/admin/v1/claims/chunk?cursor=${cursor}&page_size=${pageSize}`
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   const apiRequest = await fetcher({
     url,
     refresh,
-    access
+    access,
   });
 
   if (apiRequest.error) {

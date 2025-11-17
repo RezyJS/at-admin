@@ -1,32 +1,22 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { ReactNode, useEffect, useState } from 'react';
-import useSWR from 'swr';
-import { Loader2 } from 'lucide-react';
+import { PropsWithChildren, ReactNode } from 'react';
 import { baseURL } from '@/lib/utils';
+import useSWR from 'swr';
 
-const fetcher = (url: string) => axios.post(url).then((res) => res.data);
+const fetcher = (url: string) => axios.get(url);
 
 export default function AdminLayout({
   children,
   className,
 }: {
-  children?: ReactNode;
   className?: string;
-}) {
-  const { data, isLoading } = useSWR('/api/dataFetching/checkAdmin', fetcher);
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-
-  useEffect(() => {
-    if (!isLoading) {
-      if (data?.privileges.is_super_admin) {
-        setIsSuperAdmin(true);
-      }
-    }
-  }, [data, isLoading]);
+} & PropsWithChildren) {
+  const { data, isLoading } = useSWR('/api/admins/checkPrivileges', fetcher);
 
   const router = useRouter();
 
@@ -35,7 +25,7 @@ export default function AdminLayout({
   };
 
   const handleSignOut = () => {
-    axios.post('/api/signout').finally(() => router.push(`${baseURL}/auth`));
+    axios.get('/api/auth/logout').finally(() => router.push('/auth'));
   };
 
   return (
@@ -61,34 +51,39 @@ export default function AdminLayout({
             >
               Объявления
             </Button>
-            {isLoading ? (
-              <Loader2 className='text-white w-auto h-auto animate-spin' />
-            ) : (
-              isSuperAdmin && (
-                <>
-                  <Button
-                    variant={'secondary'}
-                    className='rounded-sm'
-                    onClick={() => handleChangePage('administrators')}
-                  >
-                    Администраторы
-                  </Button>
-                  <Button
-                    variant={'secondary'}
-                    className='rounded-sm'
-                    onClick={() => handleChangePage('categories')}
-                  >
-                    Категории
-                  </Button>
-                  <Button
-                    variant={'secondary'}
-                    className='rounded-sm'
-                    onClick={() => handleChangePage('blocked-users')}
-                  >
-                    Заблокированные пользователи
-                  </Button>
-                </>
-              )
+            {isLoading && (
+              <>
+                <Skeleton className='w-32 h-9' />
+                <Skeleton className='w-32 h-9' />
+                <Skeleton className='w-32 h-9' />
+              </>
+            )}
+            {!isLoading && data?.data.privileges.is_super_admin && (
+              <Button
+                variant={'secondary'}
+                className='rounded-sm'
+                onClick={() => handleChangePage('administrators')}
+              >
+                Администраторы
+              </Button>
+            )}
+            {!isLoading && data?.data.privileges.is_admin && (
+              <>
+                <Button
+                  variant={'secondary'}
+                  className='rounded-sm'
+                  onClick={() => handleChangePage('categories')}
+                >
+                  Категории
+                </Button>
+                <Button
+                  variant={'secondary'}
+                  className='rounded-sm'
+                  onClick={() => handleChangePage('blocked-users')}
+                >
+                  Заблокированные пользователи
+                </Button>
+              </>
             )}
           </div>
           <Button

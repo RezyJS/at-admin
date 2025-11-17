@@ -1,6 +1,5 @@
 'use client';
 
-import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import {
   ColumnDef,
   getCoreRowModel,
@@ -272,7 +271,7 @@ export default function AnnouncementsPage() {
       cell: ({ row }) => {
         const title = row.getValue('title') as string;
         return (
-          <div className='prose prose-sm max-w-none [&>*]:m-0 [&>*]:line-clamp-3'>
+          <div className='prose prose-sm max-w-none *:m-0 *:line-clamp-3'>
             <Markdown>{title}</Markdown>
           </div>
         );
@@ -285,7 +284,7 @@ export default function AnnouncementsPage() {
       cell: ({ row }) => {
         const description = row.getValue('description') as string;
         return (
-          <div className='prose prose-sm max-w-none [&>*]:m-0 [&>*]:line-clamp-3'>
+          <div className='prose prose-sm max-w-none *:m-0 *:line-clamp-3'>
             <Markdown>{description}</Markdown>
           </div>
         );
@@ -312,42 +311,38 @@ export default function AnnouncementsPage() {
 
   if (error) {
     return (
-      <AdminLayout>
-        <div className='flex flex-col items-center justify-center h-full'>
-          <p className='text-red-500'>
-            Ошибка загрузки данных:
-            <br />
-            {error.message}
-          </p>
-          <button
-            onClick={clearCache}
-            className='mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
-          >
-            Очистить кеш и попробовать снова
-          </button>
-        </div>
-      </AdminLayout>
+      <div className='flex flex-col items-center justify-center h-full'>
+        <p className='text-red-500'>
+          Ошибка загрузки данных:
+          <br />
+          {error.message}
+        </p>
+        <button
+          onClick={clearCache}
+          className='mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
+        >
+          Очистить кеш и попробовать снова
+        </button>
+      </div>
     );
   }
 
   // Показываем загрузку во время гидрации или если нет данных и идет загрузка
   if (!isHydrated || (isLoading && allAnnouncements.length === 0)) {
     return (
-      <AdminLayout>
-        <div className='flex flex-col items-center justify-center h-full'>
-          <Loader2 className='h-16 w-16 animate-spin' />
-          <p className='mt-4'>
-            {!isHydrated ? 'Инициализация...' : 'Загрузка объявлений...'}
-          </p>
-        </div>
-      </AdminLayout>
+      <div className='flex flex-col items-center justify-center h-full'>
+        <Loader2 className='h-16 w-16 animate-spin' />
+        <p className='mt-4'>
+          {!isHydrated ? 'Инициализация...' : 'Загрузка объявлений...'}
+        </p>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
+    <>
       <div className='px-6 flex w-full justify-between'>
-        <h1 className='text-2xl font-semibold'>Список объявлений</h1>
+        <h1 className='text-2xl font-bold'>Список объявлений</h1>
         <div className='flex gap-5'>
           <div className='flex items-center gap-4'>
             <div className='text-sm text-gray-600'>
@@ -410,6 +405,6 @@ export default function AnnouncementsPage() {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </>
   );
 }

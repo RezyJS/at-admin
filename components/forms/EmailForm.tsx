@@ -26,8 +26,6 @@ export default function EmailForm({
 }) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const router = useRouter();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,7 +36,7 @@ export default function EmailForm({
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     axios
-      .post('/api/signin', values)
+      .post('/api/auth/sendCode', values)
       .then(() => {
         setEmail(values.email);
         toast('Код отправлен на почту!', {

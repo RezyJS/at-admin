@@ -3,7 +3,6 @@
 import EmailForm from '@/components/forms/EmailForm';
 import CheckCodeForm from '@/components/forms/CheckCodeForm';
 import { useState } from 'react';
-import { baseURL } from '@/lib/utils';
 
 export default function AuthPage() {
   const [isCode, setIsCode] = useState(false);

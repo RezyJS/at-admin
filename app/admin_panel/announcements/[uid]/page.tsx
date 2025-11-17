@@ -19,7 +19,6 @@ import {
   Clock,
   User,
 } from 'lucide-react';
-import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -91,7 +90,7 @@ const NewsData = ({ data }: { data: any; mutate: () => void }) => {
         </CardHeader>
         <CardContent>
           <div className='flex gap-3'>
-            <FileText className='w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0' />
+            <FileText className='w-5 h-5 text-gray-400 mt-0.5 shrink-0' />
             <div className='flex-1'>
               <h3 className='text-sm font-medium text-gray-700 mb-2'>
                 Содержание
@@ -241,48 +240,30 @@ const News = ({ params }: { params: Promise<{ uid: string }> }) => {
 
   if (error) {
     return (
-      <AdminLayout>
-        <div className='min-h-screen flex items-center justify-center p-4'>
-          <Card className='border-0 shadow-sm max-w-md w-full'>
-            <CardContent className='text-center py-8'>
-              <AlertCircle className='w-12 h-12 text-red-500 mx-auto mb-4' />
-              <h2 className='text-xl font-semibold text-gray-900 mb-2'>
-                Ошибка загрузки
-              </h2>
-              <p className='text-gray-600 mb-4'>
-                Не удалось загрузить данные новости
-              </p>
-              <Button
-                onClick={() => router.push('/admin_panel/announcements')}
-                variant='outline'
-              >
-                Вернуться к списку
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </AdminLayout>
+      <div className='min-h-screen flex items-center justify-center p-4'>
+        <Card className='border-0 shadow-sm max-w-md w-full'>
+          <CardContent className='text-center py-8'>
+            <AlertCircle className='w-12 h-12 text-red-500 mx-auto mb-4' />
+            <h2 className='text-xl font-semibold text-gray-900 mb-2'>
+              Ошибка загрузки
+            </h2>
+            <p className='text-gray-600 mb-4'>
+              Не удалось загрузить данные новости
+            </p>
+            <Button
+              onClick={() => router.push('/admin_panel/announcements')}
+              variant='outline'
+            >
+              Вернуться к списку
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <AdminLayout>
-        <Wrapper
-          isLoading={isLoading}
-          data={data}
-          params={params}
-          router={router}
-          mutate={mutate}
-        >
-          <NewsSkeleton />
-        </Wrapper>
-      </AdminLayout>
-    );
-  }
-
-  return (
-    <AdminLayout>
       <Wrapper
         isLoading={isLoading}
         data={data}
@@ -290,21 +271,33 @@ const News = ({ params }: { params: Promise<{ uid: string }> }) => {
         router={router}
         mutate={mutate}
       >
-        <NewsData
-          data={data}
-          mutate={mutate}
-        />
-        {showScrollButton && (
-          <Button
-            variant='default'
-            className='fixed bottom-6 right-6 p-3 rounded-full shadow-lg z-50 w-12 h-12'
-            onClick={scrollToTop}
-          >
-            <ArrowUp className='w-5 h-5' />
-          </Button>
-        )}
+        <NewsSkeleton />
       </Wrapper>
-    </AdminLayout>
+    );
+  }
+
+  return (
+    <Wrapper
+      isLoading={isLoading}
+      data={data}
+      params={params}
+      router={router}
+      mutate={mutate}
+    >
+      <NewsData
+        data={data}
+        mutate={mutate}
+      />
+      {showScrollButton && (
+        <Button
+          variant='default'
+          className='fixed bottom-6 right-6 p-3 rounded-full shadow-lg z-50 w-12 h-12'
+          onClick={scrollToTop}
+        >
+          <ArrowUp className='w-5 h-5' />
+        </Button>
+      )}
+    </Wrapper>
   );
 };
 

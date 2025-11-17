@@ -1,6 +1,5 @@
 'use client';
 
-import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import {
   ColumnDef,
   getCoreRowModel,
@@ -303,7 +302,7 @@ export default function ClaimsPage() {
       cell: ({ row }) => {
         const title = row.getValue('title') as string;
         return (
-          <p className='max-w-prose break-words hyphens-auto leading-relaxed'>
+          <p className='max-w-prose wrap-break-word hyphens-auto leading-relaxed'>
             {title}
           </p>
         );
@@ -359,101 +358,95 @@ export default function ClaimsPage() {
 
   if (error) {
     return (
-      <AdminLayout>
-        <div className='flex flex-col text-3xl h-full w-full items-center justify-center'>
-          <p>
-            Ошибка загрузки данных:
-            <br />
-            {error.message}
-          </p>
-          <button
-            onClick={clearCache}
-            className='mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
-          >
-            Очистить кеш и попробовать снова
-          </button>
-        </div>
-      </AdminLayout>
+      <div className='flex flex-col text-3xl h-full w-full items-center justify-center'>
+        <p>
+          Ошибка загрузки данных:
+          <br />
+          {error.message}
+        </p>
+        <button
+          onClick={clearCache}
+          className='mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600'
+        >
+          Очистить кеш и попробовать снова
+        </button>
+      </div>
     );
   }
 
   // Показываем загрузку во время гидрации или если нет данных и идет загрузка
   if (!isHydrated || (isLoading && allClaims.length === 0)) {
     return (
-      <AdminLayout>
-        <div className='flex flex-col h-full w-full items-center justify-center'>
-          <Loader2 className='h-16 w-16 animate-spin' />
-          <p className='mt-4 text-lg text-gray-600'>
-            {!isHydrated ? 'Инициализация...' : 'Загрузка заявок...'}
-          </p>
-        </div>
-      </AdminLayout>
+      <div className='flex flex-col h-full w-full items-center justify-center'>
+        <Loader2 className='h-16 w-16 animate-spin' />
+        <p className='mt-4 text-lg text-gray-600'>
+          {!isHydrated ? 'Инициализация...' : 'Загрузка заявок...'}
+        </p>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
-      <div className='flex gap-5 w-full h-full justify-between items-start'>
-        <div className='w-full h-full flex flex-col space-y-4'>
-          <div className='flex items-center justify-between'>
-            <h1 className='text-2xl font-bold'>Список заявок</h1>
-            <div className='flex items-center gap-4'>
-              <div className='text-sm text-gray-500'>
-                Загружено: {allClaims.length} заявок
-              </div>
-              <button
-                onClick={clearCache}
-                className='text-xs px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300'
-                title='Обновить данные'
-              >
-                Обновить
-              </button>
+    <div className='flex gap-5 w-full h-full justify-between items-start'>
+      <div className='w-full h-full flex flex-col space-y-4'>
+        <div className='flex items-center justify-between'>
+          <h1 className='text-2xl font-bold'>Список заявок</h1>
+          <div className='flex items-center gap-4'>
+            <div className='text-sm text-gray-500'>
+              Загружено: {allClaims.length} заявок
             </div>
-          </div>
-
-          <div
-            ref={scrollContainerRef}
-            onScroll={handleScroll}
-            className='overflow-y-auto rounded-lg border shadow-sm'
-            style={{
-              height: 'calc(100vh - 200px)',
-              minHeight: '600px',
-            }}
-          >
-            {allClaims.length > 0 ? (
-              <div>
-                <MyClaimsTable
-                  table={table}
-                  onRowClick={handleRowClick}
-                />
-
-                <div
-                  ref={observerRef}
-                  className='h-20 flex items-center justify-center'
-                >
-                  {isLoadingMore && hasMore && (
-                    <div className='flex items-center gap-2'>
-                      <Loader2 className='h-6 w-6 animate-spin' />
-                      <span className='text-sm text-gray-500'>
-                        Загружаем больше заявок...
-                      </span>
-                    </div>
-                  )}
-                  {!hasMore && !isLoadingMore && allClaims.length > 0 && (
-                    <div className='text-sm text-gray-500 py-4'>
-                      Все заявки загружены
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className='flex w-full h-full items-center justify-center text-xl text-gray-500'>
-                Заявки не найдены
-              </div>
-            )}
+            <button
+              onClick={clearCache}
+              className='text-xs px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300'
+              title='Обновить данные'
+            >
+              Обновить
+            </button>
           </div>
         </div>
+
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className='overflow-y-auto rounded-lg border shadow-sm'
+          style={{
+            height: 'calc(100vh - 200px)',
+            minHeight: '600px',
+          }}
+        >
+          {allClaims.length > 0 ? (
+            <div>
+              <MyClaimsTable
+                table={table}
+                onRowClick={handleRowClick}
+              />
+
+              <div
+                ref={observerRef}
+                className='h-20 flex items-center justify-center'
+              >
+                {isLoadingMore && hasMore && (
+                  <div className='flex items-center gap-2'>
+                    <Loader2 className='h-6 w-6 animate-spin' />
+                    <span className='text-sm text-gray-500'>
+                      Загружаем больше заявок...
+                    </span>
+                  </div>
+                )}
+                {!hasMore && !isLoadingMore && allClaims.length > 0 && (
+                  <div className='text-sm text-gray-500 py-4'>
+                    Все заявки загружены
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className='flex w-full h-full items-center justify-center text-xl text-gray-500'>
+              Заявки не найдены
+            </div>
+          )}
+        </div>
       </div>
-    </AdminLayout>
+    </div>
   );
 }

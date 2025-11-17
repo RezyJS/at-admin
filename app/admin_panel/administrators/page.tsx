@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 'use client';
 
-import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -195,41 +194,35 @@ export default function AdministratorsPage() {
 
   if (error) {
     return (
-      <AdminLayout>
-        <div className='flex h-full w-full justify-center items-center text-red-600'>
-          Ошибка загрузки данных
-        </div>
-      </AdminLayout>
+      <div className='flex h-full w-full justify-center items-center text-red-600'>
+        Ошибка загрузки данных
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <AdminLayout>
-        <div className='flex h-full w-full justify-center items-center'>
-          <Loader2 className='animate-spin h-12 w-12 text-blue-600' />
-        </div>
-      </AdminLayout>
+      <div className='flex h-full w-full justify-center items-center'>
+        <Loader2 className='animate-spin h-12 w-12 text-blue-600' />
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
-      <div className='max-w-6xl mx-auto space-y-6'>
-        <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
-          <h1 className='text-2xl font-bold text-gray-900'>
-            Управление администраторами
-          </h1>
-          <CreateAdminDialog
-            email={email}
-            setEmail={setEmail}
-          />
-        </div>
-
-        <div className='rounded-xl border bg-white shadow-sm'>
-          <MyAdminTable table={table} />
-        </div>
+    <div className='max-w-6xl mx-auto space-y-6'>
+      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
+        <h1 className='text-2xl font-bold text-gray-900'>
+          Управление администраторами
+        </h1>
+        <CreateAdminDialog
+          email={email}
+          setEmail={setEmail}
+        />
       </div>
-    </AdminLayout>
+
+      <div className='rounded-xl border bg-white shadow-sm'>
+        <MyAdminTable table={table} />
+      </div>
+    </div>
   );
 }

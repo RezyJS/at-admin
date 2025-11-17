@@ -23,7 +23,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -125,7 +124,7 @@ const ClaimData = ({ data, mutate }: { data: any; mutate: () => void }) => {
         </CardHeader>
         <CardContent>
           <div className='flex items-start gap-2'>
-            <FileText className='w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0' />
+            <FileText className='w-5 h-5 text-gray-400 mt-0.5 shrink-0' />
             <div className='flex-1'>
               <h3 className='font-semibold text-gray-900 mb-2'>Описание</h3>
               <p className='text-gray-700 leading-relaxed whitespace-pre-wrap'>
@@ -191,7 +190,7 @@ const ClaimData = ({ data, mutate }: { data: any; mutate: () => void }) => {
                   <button
                     key={index}
                     onClick={() => setOpenImageIndex(index)}
-                    className='flex-shrink-0 rounded-md overflow-hidden shadow-sm hover:shadow-xl transition-shadow'
+                    className='shrink-0 rounded-md overflow-hidden shadow-sm hover:shadow-xl transition-shadow'
                   >
                     <img
                       src={url}
@@ -207,7 +206,7 @@ const ClaimData = ({ data, mutate }: { data: any; mutate: () => void }) => {
       )}
 
       {openImageIndex !== null && (
-        <div className='fixed h-[100dvh] inset-0 bg-black/90 z-[1000] flex items-center justify-center p-4'>
+        <div className='fixed h-dvh inset-0 bg-black/90 z-1000 flex items-center justify-center p-4'>
           <button
             className='absolute top-4 right-4 text-white p-2 rounded-full hover:bg-white/20'
             onClick={() => setOpenImageIndex(null)}
@@ -290,7 +289,7 @@ const ClaimData = ({ data, mutate }: { data: any; mutate: () => void }) => {
               setIsFeedback={setIsFeedback}
             />
           ) : (
-            <div className='prose max-w-none text-blue-800 border-2 p-2 border-blue-500 rounded-md break-words'>
+            <div className='prose max-w-none text-blue-800 border-2 p-2 border-blue-500 rounded-md wrap-break-word'>
               {data.feedback ? (
                 <MarkdownText>{data.feedback}</MarkdownText>
               ) : (
@@ -400,7 +399,7 @@ const ChangeClaimTextArea = ({
         <textarea
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
-          className='w-1/2 h-[700px] p-3 text-blue-800 border-2 border-blue-500 rounded-md break-words whitespace-pre-wrap'
+          className='w-1/2 h-[700px] p-3 text-blue-800 border-2 border-blue-500 rounded-md wrap-break-word whitespace-pre-wrap'
           placeholder='Введите ответ администратора...'
         />
         <div className='w-1/2 h-[700px] border overflow-scroll border-gray-500 rounded-md p-3'>
@@ -487,46 +486,28 @@ const Claims = ({ params }: { params: Promise<{ id: string }> }) => {
 
   if (error) {
     return (
-      <AdminLayout>
-        <div className='flex justify-center items-center min-h-[50vh]'>
-          <Card className='border-0 shadow-sm max-w-md w-full'>
-            <CardContent className='text-center py-8'>
-              <AlertCircle className='w-12 h-12 text-red-500 mx-auto mb-4' />
-              <h2 className='text-xl font-bold mb-2'>Ошибка загрузки</h2>
-              <p className='text-gray-600 mb-6'>
-                Не удалось загрузить данные заявки
-              </p>
-              <Button
-                onClick={() => router.push('/admin_panel/claims')}
-                variant='outline'
-              >
-                Вернуться к списку
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </AdminLayout>
+      <div className='flex justify-center items-center min-h-[50vh]'>
+        <Card className='border-0 shadow-sm max-w-md w-full'>
+          <CardContent className='text-center py-8'>
+            <AlertCircle className='w-12 h-12 text-red-500 mx-auto mb-4' />
+            <h2 className='text-xl font-bold mb-2'>Ошибка загрузки</h2>
+            <p className='text-gray-600 mb-6'>
+              Не удалось загрузить данные заявки
+            </p>
+            <Button
+              onClick={() => router.push('/admin_panel/claims')}
+              variant='outline'
+            >
+              Вернуться к списку
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-      <AdminLayout>
-        <Wrapper
-          isLoading={isLoading}
-          data={data}
-          params={params}
-          router={router}
-          mutate={mutate}
-        >
-          <ClaimSkeleton />
-        </Wrapper>
-      </AdminLayout>
-    );
-  }
-
-  return (
-    <AdminLayout>
       <Wrapper
         isLoading={isLoading}
         data={data}
@@ -534,21 +515,33 @@ const Claims = ({ params }: { params: Promise<{ id: string }> }) => {
         router={router}
         mutate={mutate}
       >
-        <ClaimData
-          data={data}
-          mutate={mutate}
-        />
-        {showScrollButton && (
-          <Button
-            variant='default'
-            className='fixed bottom-6 right-6 p-3 rounded-full shadow-lg z-50 w-12 h-12'
-            onClick={scrollToTop}
-          >
-            <ArrowUp className='w-5 h-5' />
-          </Button>
-        )}
+        <ClaimSkeleton />
       </Wrapper>
-    </AdminLayout>
+    );
+  }
+
+  return (
+    <Wrapper
+      isLoading={isLoading}
+      data={data}
+      params={params}
+      router={router}
+      mutate={mutate}
+    >
+      <ClaimData
+        data={data}
+        mutate={mutate}
+      />
+      {showScrollButton && (
+        <Button
+          variant='default'
+          className='fixed bottom-6 right-6 p-3 rounded-full shadow-lg z-50 w-12 h-12'
+          onClick={scrollToTop}
+        >
+          <ArrowUp className='w-5 h-5' />
+        </Button>
+      )}
+    </Wrapper>
   );
 };
 

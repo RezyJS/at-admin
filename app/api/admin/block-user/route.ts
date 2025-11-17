@@ -3,8 +3,8 @@ import { afterFetcher, apiURL } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-  const refresh = request.cookies.get('refresh_token')?.value;
-  const access = request.cookies.get('access_token')?.value;
+  const refresh = request.cookies.get('refreshToken')?.value;
+  const access = request.cookies.get('accessToken')?.value;
 
   const { uid, reason } = await request.json();
 

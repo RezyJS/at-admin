@@ -3,7 +3,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Markdown from '@/components/Markdown/Markdown';
-import AdminLayout from '@/components/layouts/AdminLayout/AdminLayout';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -97,62 +96,57 @@ export default function HomePage() {
   // Функция для рендеринга Markdown в HTML
 
   return (
-    <AdminLayout>
-      {/* 
-        back button
-        */}
-      <div className='flex flex-col gap-5'>
-        <div className='flex gap-5 items-center'>
-          <strong>Заголовок:</strong>
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.currentTarget.value)}
-          />
-          <Button
-            onClick={() => {
-              axios
-                .post('/api/dataFetching/createAnnouncement', {
-                  title,
-                  description,
-                })
-                .then((res) => {
-                  router.push(
-                    `${baseURL}/admin_panel/announcements/${res.data.id}`
-                  );
-                });
+    <div className='flex flex-col gap-5'>
+      <div className='flex gap-5 items-center'>
+        <strong>Заголовок:</strong>
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.currentTarget.value)}
+        />
+        <Button
+          onClick={() => {
+            axios
+              .post('/api/dataFetching/createAnnouncement', {
+                title,
+                description,
+              })
+              .then((res) => {
+                router.push(
+                  `${baseURL}/admin_panel/announcements/${res.data.id}`
+                );
+              });
+          }}
+        >
+          Создать новость
+        </Button>
+        <Button
+          variant={'outline'}
+          className='text-red-500 border-red-500 hover:bg-red-500 hover:text-white'
+          onClick={() => router.back()}
+        >
+          Назад
+        </Button>
+      </div>
+      <div className='flex w-full h-full gap-5 flex-1'>
+        <div className='flex flex-col w-1/2 h-[80dvh] gap-2'>
+          <strong>Текст новости:</strong>
+          <Textarea
+            ref={editorRef}
+            value={description}
+            className='flex-1'
+            style={{ resize: 'none' }}
+            onChange={(e) => {
+              setDescription(e.target.value);
             }}
-          >
-            Создать новость
-          </Button>
-          <Button
-            variant={'outline'}
-            className='text-red-500 border-red-500 hover:bg-red-500 hover:text-white'
-            onClick={() => router.back()}
-          >
-            Назад
-          </Button>
+          />
         </div>
-        <div className='flex w-full h-full gap-5 flex-1'>
-          <div className='flex flex-col w-1/2 h-[80dvh] gap-2'>
-            <strong>Текст новости:</strong>
-            <Textarea
-              ref={editorRef}
-              value={description}
-              className='flex-1'
-              style={{ resize: 'none' }}
-              onChange={(e) => {
-                setDescription(e.target.value);
-              }}
-            />
-          </div>
-          <div className='flex flex-col gap-2 w-1/2 overflow-scroll h-[80dvh]'>
-            <strong>Конечный результат:</strong>
-            <div className='p-5 border-[1px] rounded-md h-full'>
-              <Markdown>{description}</Markdown>
-            </div>
+        <div className='flex flex-col gap-2 w-1/2 overflow-scroll h-[80dvh]'>
+          <strong>Конечный результат:</strong>
+          <div className='p-5 border rounded-md h-full'>
+            <Markdown>{description}</Markdown>
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </div>
   );
 }

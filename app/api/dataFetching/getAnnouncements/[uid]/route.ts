@@ -5,13 +5,13 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   const id = request.url.slice(request.url.lastIndexOf('/'));
 
-  const refresh = request.cookies.get('refresh_token')?.value;
-  const access = request.cookies.get('access_token')?.value;
+  const refresh = request.cookies.get('refreshToken')?.value;
+  const access = request.cookies.get('accessToken')?.value;
 
   const apiRequest = await fetcher({
     url: `${apiURL}/admin/v1/announcements/${id}`,
     refresh,
-    access
+    access,
   });
 
   if (apiRequest.error) {
