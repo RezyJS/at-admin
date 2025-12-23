@@ -2,11 +2,12 @@ import { clsx, type ClassValue } from 'clsx';
 import { NextResponse } from 'next/server';
 import { twMerge } from 'tailwind-merge';
 import { FetcherResult } from './fetcher';
+import { refreshSession } from './session';
 
 export const apiURL = process.env.NEXT_PUBLIC_API_URL;
 export const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export const afterFetcher = (
+export const afterFetcher = async (
   apiRequest: FetcherResult,
   body?: 'claims' | 'news' | 'admins' | 'block',
   isBlocked?: boolean
@@ -29,19 +30,7 @@ export const afterFetcher = (
   if (apiRequest.refresh && apiRequest.access) {
     const { refresh, access } = apiRequest;
 
-    response!.cookies.set('accessToken', access, {
-      httpOnly: true,
-      maxAge: 15 * 60, // 15 minutes
-      secure: true,
-      sameSite: 'strict',
-    });
-
-    response!.cookies.set('refreshToken', refresh, {
-      httpOnly: true,
-      maxAge: 90 * 24 * 60 * 60, // 30 days
-      secure: true,
-      sameSite: 'strict',
-    });
+    await refreshSession({ access, refresh });
   }
 
   return response;

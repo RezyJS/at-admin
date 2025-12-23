@@ -24,5 +24,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.error();
   }
 
-  return afterFetcher(apiRequest, 'claims');
+  return await afterFetcher(apiRequest, 'claims');
 }

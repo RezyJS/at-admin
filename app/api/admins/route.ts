@@ -1,11 +1,11 @@
 import fetcher from '@/lib/fetcher';
+import { getSession } from '@/lib/session';
 import { afterFetcher, apiURL } from '@/lib/utils';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 export async function GET(request: NextRequest) {
-  const refresh = request.cookies.get('refreshToken')?.value;
-  const access = request.cookies.get('accessToken')?.value;
+  const { access, refresh } = await getSession();
 
   const apiRequest = await fetcher({
     url: `${apiURL}/admin/v1/admins`,
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.error();
   }
 
-  return afterFetcher(apiRequest, 'admins');
+  return await afterFetcher(apiRequest, 'admins');
 }
 
 export async function POST(request: NextRequest) {
@@ -37,8 +37,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const refresh = request.cookies.get('refreshToken')?.value;
-  const access = request.cookies.get('accessToken')?.value;
+  const { access, refresh } = await getSession();
 
   const apiRequest = await fetcher({
     url: `${apiURL}/admin/v1/admins/add`,
@@ -55,7 +54,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  return afterFetcher(apiRequest);
+  return await afterFetcher(apiRequest);
 }
 
 export async function DELETE(request: NextRequest) {
@@ -75,8 +74,7 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  const refresh = request.cookies.get('refreshToken')?.value;
-  const access = request.cookies.get('accessToken')?.value;
+  const { access, refresh } = await getSession();
 
   const apiRequest = await fetcher({
     url: `${apiURL}/admin/v1/admins/remove`,
@@ -93,5 +91,5 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  return afterFetcher(apiRequest);
+  return await afterFetcher(apiRequest);
 }

@@ -27,5 +27,5 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return afterFetcher(response);
+  return await afterFetcher(response);
 }

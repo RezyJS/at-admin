@@ -12,11 +12,9 @@ export async function GET(request: NextRequest) {
     access,
   });
 
-  console.table(apiRequest);
-
   if (apiRequest.error) {
     return NextResponse.error();
   }
 
-  return afterFetcher(apiRequest);
+  return await afterFetcher(apiRequest);
 }

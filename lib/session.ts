@@ -1,3 +1,5 @@
+'use server';
+
 import { cookies } from 'next/headers';
 
 interface ISessionData {
@@ -26,6 +28,15 @@ export const createSession = async ({ access, refresh }: ISessionData) => {
     maxAge: THIRTY_DAYS,
     sameSite: 'strict',
   });
+};
+
+export const getSession = async () => {
+  const cookieStore = await cookies();
+
+  const refresh = cookieStore.get('refreshToken')?.value;
+  const access = cookieStore.get('accessToken')?.value;
+
+  return { access, refresh };
 };
 
 export const refreshSession = async ({ access, refresh }: ISessionData) => {

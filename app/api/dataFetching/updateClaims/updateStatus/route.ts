@@ -22,5 +22,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.error();
   }
 
-  return afterFetcher(apiRequest);
+  return await afterFetcher(apiRequest);
 }

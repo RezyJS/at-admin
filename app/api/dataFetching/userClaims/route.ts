@@ -31,5 +31,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.error();
   }
 
-  return afterFetcher(apiRequest, 'claims');
+  return await afterFetcher(apiRequest, 'claims');
 }

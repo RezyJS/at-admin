@@ -41,5 +41,5 @@ export async function POST(request: NextRequest) {
     }
   })();
 
-  return afterFetcher(apiRequest, 'block', isBlocked);
+  return await afterFetcher(apiRequest, 'block', isBlocked);
 }
